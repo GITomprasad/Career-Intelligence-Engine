@@ -1,0 +1,25 @@
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.env
+
+# Testing & logs
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Streamlit & IDE
+.streamlit/
+.vscode/
+.idea/
+.DS_Store
+
+# OS specific
+Thumbs.db

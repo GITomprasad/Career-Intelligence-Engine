@@ -1,0 +1,32 @@
+ROHAN GUPTA
+Email: rohan.gupta.tech@gmail.com | Phone: +91 9012345678
+LinkedIn: linkedin.com/in/rohan-gupta-dev | GitHub: github.com/rohangupta-code
+Location: Pune, India
+
+OBJECTIVE
+Motivated Computer Science graduate seeking an entry-level Data Analyst / Junior Data Scientist role. Solid foundation in Python, SQL, Statistics, and foundational Machine Learning.
+
+EDUCATION
+B.E. in Information Technology (2020 - 2024)
+Pune Institute of Computer Technology (PICT) | CGPA: 8.2 / 10.0
+
+TECHNICAL SKILLS
+- Programming: Python, SQL, C++, HTML, CSS, JavaScript
+- Data Analysis: Pandas, NumPy, Matplotlib, Seaborn, Excel
+- Basic Machine Learning: Scikit-learn, Linear Regression, Logistic Regression, Decision Trees
+- Tools: Git, GitHub, VS Code, Jupyter Notebook, MySQL
+
+ACADEMIC PROJECTS
+1. House Price Prediction System
+- Cleaned and prepared tabular housing datasets, conducted exploratory data analysis and feature scaling.
+- Trained multiple Scikit-learn regression models (Linear Regression, Random Forest), achieving 84% R2 score.
+- Tech Stack: Python, Pandas, Scikit-learn, Matplotlib.
+
+2. Student Academic Performance Analysis
+- Analyzed student demographic and test score data using Python and MySQL to find factors correlating with exam performance.
+- Visualized findings through interactive charts and statistical summaries.
+- Tech Stack: Python, MySQL, Seaborn, Excel.
+
+CERTIFICATIONS
+- Python for Data Science and Machine Learning Bootcamp (Udemy)
+- SQL Fundamentals (HackerRank 5-star Gold Badge)

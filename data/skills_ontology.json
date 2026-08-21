@@ -1,0 +1,252 @@
+{
+  "categories": {
+    "programming_languages": {
+      "name": "Programming Languages",
+      "skills": [
+        {"id": "python", "name": "Python", "aliases": ["python", "python3", "py"]},
+        {"id": "r", "name": "R", "aliases": ["r", "r-lang", "r programming"]},
+        {"id": "sql", "name": "SQL", "aliases": ["sql", "structured query language", "pl/sql", "t-sql"]},
+        {"id": "java", "name": "Java", "aliases": ["java", "core java", "j2ee"]},
+        {"id": "cpp", "name": "C++", "aliases": ["c++", "cpp"]},
+        {"id": "c", "name": "C", "aliases": ["c language", "ansi c"]},
+        {"id": "csharp", "name": "C#", "aliases": ["c#", "csharp", ".net"]},
+        {"id": "javascript", "name": "JavaScript", "aliases": ["javascript", "js", "es6", "vanilla js"]},
+        {"id": "typescript", "name": "TypeScript", "aliases": ["typescript", "ts"]},
+        {"id": "scala", "name": "Scala", "aliases": ["scala"]},
+        {"id": "go", "name": "Go", "aliases": ["go", "golang"]},
+        {"id": "rust", "name": "Rust", "aliases": ["rust", "rustlang"]},
+        {"id": "bash", "name": "Bash / Shell", "aliases": ["bash", "shell", "shell scripting", "zsh", "powershell"]},
+        {"id": "julia", "name": "Julia", "aliases": ["julia", "julialang"]},
+        {"id": "matlab", "name": "MATLAB", "aliases": ["matlab", "simulink"]},
+        {"id": "ruby", "name": "Ruby", "aliases": ["ruby", "ruby on rails", "rails"]},
+        {"id": "php", "name": "PHP", "aliases": ["php", "laravel"]},
+        {"id": "kotlin", "name": "Kotlin", "aliases": ["kotlin"]},
+        {"id": "swift", "name": "Swift", "aliases": ["swift", "ios development"]}
+      ]
+    },
+    "data_science_ml": {
+      "name": "Data Science & Machine Learning",
+      "skills": [
+        {"id": "machine_learning", "name": "Machine Learning", "aliases": ["machine learning", "ml", "statistical learning"]},
+        {"id": "deep_learning", "name": "Deep Learning", "aliases": ["deep learning", "dl", "neural networks", "ann", "cnn", "rnn"]},
+        {"id": "pandas", "name": "Pandas", "aliases": ["pandas"]},
+        {"id": "numpy", "name": "NumPy", "aliases": ["numpy"]},
+        {"id": "scikit_learn", "name": "Scikit-Learn", "aliases": ["scikit-learn", "sklearn", "scikit learn"]},
+        {"id": "pytorch", "name": "PyTorch", "aliases": ["pytorch", "torch"]},
+        {"id": "tensorflow", "name": "TensorFlow", "aliases": ["tensorflow", "tf", "keras"]},
+        {"id": "nlp", "name": "Natural Language Processing (NLP)", "aliases": ["nlp", "natural language processing", "text mining", "tokenization", "sentiment analysis", "spacy", "nltk", "transformers", "huggingface", "bert", "gpt"]},
+        {"id": "computer_vision", "name": "Computer Vision", "aliases": ["computer vision", "cv", "opencv", "object detection", "image segmentation", "yolo"]},
+        {"id": "llms", "name": "Large Language Models & GenAI", "aliases": ["llm", "llms", "large language models", "generative ai", "genai", "prompt engineering", "langchain", "llamaindex", "rag", "retrieval augmented generation"]},
+        {"id": "xgboost", "name": "XGBoost", "aliases": ["xgboost", "xgb", "lightgbm", "catboost", "gradient boosting"]},
+        {"id": "statistics", "name": "Statistics & Probability", "aliases": ["statistics", "statistical analysis", "probability", "hypothesis testing", "a/b testing", "regression analysis", "bayesian"]},
+        {"id": "time_series", "name": "Time Series Forecasting", "aliases": ["time series", "arima", "prophet", "forecasting"]},
+        {"id": "reinforcement_learning", "name": "Reinforcement Learning", "aliases": ["reinforcement learning", "rl", "q-learning"]},
+        {"id": "mlops", "name": "MLOps", "aliases": ["mlops", "model deployment", "model monitoring", "mlflow", "kubeflow", "wandb", "dvc", "bentoml", "triton"]},
+        {"id": "feature_engineering", "name": "Feature Engineering", "aliases": ["feature engineering", "feature selection", "data preprocessing", "dimensionality reduction", "pca"]}
+      ]
+    },
+    "data_engineering_databases": {
+      "name": "Data Engineering & Databases",
+      "skills": [
+        {"id": "postgresql", "name": "PostgreSQL", "aliases": ["postgresql", "postgres", "psql"]},
+        {"id": "mysql", "name": "MySQL", "aliases": ["mysql"]},
+        {"id": "mongodb", "name": "MongoDB", "aliases": ["mongodb", "mongo", "nosql"]},
+        {"id": "apache_spark", "name": "Apache Spark", "aliases": ["spark", "apache spark", "pyspark", "spark streaming"]},
+        {"id": "apache_kafka", "name": "Apache Kafka", "aliases": ["kafka", "apache kafka", "event streaming"]},
+        {"id": "apache_airflow", "name": "Apache Airflow", "aliases": ["airflow", "apache airflow", "workflow orchestration", "dag"]},
+        {"id": "snowflake", "name": "Snowflake", "aliases": ["snowflake", "snowsql"]},
+        {"id": "databricks", "name": "Databricks", "aliases": ["databricks", "delta lake"]},
+        {"id": "dbt", "name": "dbt (data build tool)", "aliases": ["dbt", "data build tool"]},
+        {"id": "redis", "name": "Redis", "aliases": ["redis", "caching"]},
+        {"id": "elasticsearch", "name": "Elasticsearch", "aliases": ["elasticsearch", "elk stack", "opensearch"]},
+        {"id": "bigquery", "name": "Google BigQuery", "aliases": ["bigquery", "google bigquery"]},
+        {"id": "redshift", "name": "Amazon Redshift", "aliases": ["redshift", "aws redshift"]},
+        {"id": "hadoop", "name": "Apache Hadoop", "aliases": ["hadoop", "hdfs", "mapreduce", "hive"]},
+        {"id": "etl_pipelines", "name": "ETL / Data Pipelines", "aliases": ["etl", "elt", "data pipeline", "data warehousing", "data modeling", "star schema", "data lake"]}
+      ]
+    },
+    "cloud_devops": {
+      "name": "Cloud Computing & DevOps",
+      "skills": [
+        {"id": "aws", "name": "AWS (Amazon Web Services)", "aliases": ["aws", "amazon web services", "ec2", "s3", "aws lambda", "cloudformation", "dynamodb", "iam"]},
+        {"id": "gcp", "name": "Google Cloud Platform (GCP)", "aliases": ["gcp", "google cloud", "google cloud platform", "vertex ai", "cloud run", "gcs"]},
+        {"id": "azure", "name": "Microsoft Azure", "aliases": ["azure", "microsoft azure", "azure devops", "azure ml", "blob storage"]},
+        {"id": "docker", "name": "Docker", "aliases": ["docker", "containerization", "docker-compose", "dockerfile"]},
+        {"id": "kubernetes", "name": "Kubernetes", "aliases": ["kubernetes", "k8s", "helm", "kubectl"]},
+        {"id": "ci_cd", "name": "CI/CD", "aliases": ["ci/cd", "continuous integration", "continuous deployment", "github actions", "gitlab ci", "jenkins"]},
+        {"id": "terraform", "name": "Terraform", "aliases": ["terraform", "iac", "infrastructure as code"]},
+        {"id": "linux", "name": "Linux / Unix Administration", "aliases": ["linux", "ubuntu", "centos", "debian", "redhat", "unix"]},
+        {"id": "git", "name": "Git & Version Control", "aliases": ["git", "github", "gitlab", "version control", "bitbucket"]}
+      ]
+    },
+    "bi_analytics_visualization": {
+      "name": "BI, Analytics & Data Visualization",
+      "skills": [
+        {"id": "power_bi", "name": "Power BI", "aliases": ["power bi", "powerbi", "dax", "power query", "power bi desktop"]},
+        {"id": "tableau", "name": "Tableau", "aliases": ["tableau", "tableau desktop", "tableau server"]},
+        {"id": "excel", "name": "Advanced Excel", "aliases": ["excel", "advanced excel", "vba", "vlookup", "pivot tables", "macros"]},
+        {"id": "matplotlib_seaborn", "name": "Matplotlib / Seaborn", "aliases": ["matplotlib", "seaborn", "data visualization"]},
+        {"id": "plotly", "name": "Plotly / Dash", "aliases": ["plotly", "dash", "altair", "bokeh", "interactive visualization"]},
+        {"id": "looker", "name": "Looker / Looker Studio", "aliases": ["looker", "lookml", "google looker studio", "google data studio"]},
+        {"id": "business_intelligence", "name": "Business Intelligence & Reporting", "aliases": ["business intelligence", "bi", "dashboarding", "kpi tracking", "executive reporting"]}
+      ]
+    },
+    "software_engineering_web": {
+      "name": "Software Engineering & Web Frameworks",
+      "skills": [
+        {"id": "fastapi", "name": "FastAPI", "aliases": ["fastapi"]},
+        {"id": "flask", "name": "Flask", "aliases": ["flask"]},
+        {"id": "django", "name": "Django", "aliases": ["django", "django rest framework", "drf"]},
+        {"id": "react", "name": "React.js", "aliases": ["react", "react.js", "reactjs", "next.js", "nextjs"]},
+        {"id": "node_js", "name": "Node.js", "aliases": ["node.js", "nodejs", "express", "express.js"]},
+        {"id": "rest_apis", "name": "RESTful APIs & Microservices", "aliases": ["rest api", "restful api", "microservices", "api design", "json", "graphql"]},
+        {"id": "system_design", "name": "System Design & Architecture", "aliases": ["system design", "software architecture", "scalability", "distributed systems", "load balancing", "caching"]},
+        {"id": "data_structures_algorithms", "name": "Data Structures & Algorithms", "aliases": ["dsa", "data structures", "algorithms", "problem solving", "leetcode", "complexity analysis", "big-o"]}
+      ]
+    },
+    "soft_skills": {
+      "name": "Soft Skills & Methodologies",
+      "skills": [
+        {"id": "communication", "name": "Communication Skills", "aliases": ["communication", "presentation skills", "verbal communication", "written communication", "storytelling"]},
+        {"id": "problem_solving", "name": "Analytical Problem Solving", "aliases": ["problem solving", "analytical thinking", "critical thinking", "root cause analysis"]},
+        {"id": "leadership", "name": "Leadership & Mentoring", "aliases": ["leadership", "mentorship", "team lead", "project management"]},
+        {"id": "agile_scrum", "name": "Agile & Scrum", "aliases": ["agile", "scrum", "kanban", "sprint planning", "jira"]},
+        {"id": "collaboration", "name": "Cross-functional Collaboration", "aliases": ["collaboration", "teamwork", "stakeholder management", "partner management"]}
+      ]
+    }
+  },
+  "roles": {
+    "data_analyst": {
+      "title": "Data Analyst",
+      "category": "Analytics",
+      "core_skills": ["sql", "python", "power_bi", "tableau", "excel", "statistics", "business_intelligence"],
+      "recommended_skills": ["pandas", "matplotlib_seaborn", "etl_pipelines", "communication", "agile_scrum"],
+      "optional_skills": ["r", "bigquery", "snowflake", "dbt"],
+      "base_salary_min_lpa": 4.5,
+      "base_salary_max_lpa": 9.5,
+      "experience_multiplier": 1.45,
+      "description": "Analyzes complex datasets to deliver actionable business insights, dashboards, and KPI metrics."
+    },
+    "data_scientist": {
+      "title": "Data Scientist",
+      "category": "Data Science",
+      "core_skills": ["python", "sql", "machine_learning", "statistics", "pandas", "numpy", "scikit_learn"],
+      "recommended_skills": ["deep_learning", "nlp", "xgboost", "feature_engineering", "matplotlib_seaborn", "docker"],
+      "optional_skills": ["aws", "mlops", "llms", "pyspark", "tableau"],
+      "base_salary_min_lpa": 6.5,
+      "base_salary_max_lpa": 16.0,
+      "experience_multiplier": 1.75,
+      "description": "Builds predictive statistical and machine learning models to solve high-impact business problems."
+    },
+    "ml_engineer": {
+      "title": "Machine Learning Engineer",
+      "category": "Data Science & Engineering",
+      "core_skills": ["python", "machine_learning", "deep_learning", "pytorch", "tensorflow", "mlops", "docker"],
+      "recommended_skills": ["scikit_learn", "aws", "kubernetes", "rest_apis", "fastapi", "ci_cd", "system_design"],
+      "optional_skills": ["llms", "computer_vision", "nlp", "apache_spark", "cplusplus"],
+      "base_salary_min_lpa": 8.0,
+      "base_salary_max_lpa": 20.0,
+      "experience_multiplier": 1.85,
+      "description": "Scales, optimizes, and deploys production machine learning systems, pipelines, and inference servers."
+    },
+    "data_engineer": {
+      "title": "Data Engineer",
+      "category": "Engineering",
+      "core_skills": ["sql", "python", "apache_spark", "postgresql", "etl_pipelines", "apache_airflow", "docker"],
+      "recommended_skills": ["snowflake", "databricks", "apache_kafka", "aws", "dbt", "linux"],
+      "optional_skills": ["scala", "bigquery", "redis", "kubernetes", "terraform"],
+      "base_salary_min_lpa": 7.0,
+      "base_salary_max_lpa": 17.5,
+      "experience_multiplier": 1.70,
+      "description": "Designs robust data architectures, distributed computing pipelines, and warehouse infrastructure."
+    },
+    "bi_analyst": {
+      "title": "Business Intelligence Analyst",
+      "category": "Analytics",
+      "core_skills": ["sql", "power_bi", "tableau", "excel", "business_intelligence", "statistics"],
+      "recommended_skills": ["python", "etl_pipelines", "communication", "problem_solving", "looker"],
+      "optional_skills": ["dbt", "snowflake", "postgresql"],
+      "base_salary_min_lpa": 4.5,
+      "base_salary_max_lpa": 10.0,
+      "experience_multiplier": 1.40,
+      "description": "Transforms business data into strategic executive dashboards, reports, and predictive trend analyses."
+    },
+    "mlops_engineer": {
+      "title": "MLOps Engineer",
+      "category": "Engineering & DevOps",
+      "core_skills": ["python", "mlops", "docker", "kubernetes", "ci_cd", "aws", "linux"],
+      "recommended_skills": ["machine_learning", "terraform", "rest_apis", "fastapi", "git", "system_design"],
+      "optional_skills": ["gcp", "azure", "apache_spark", "deep_learning"],
+      "base_salary_min_lpa": 8.5,
+      "base_salary_max_lpa": 21.0,
+      "experience_multiplier": 1.80,
+      "description": "Automates machine learning model lifecycles, CI/CD orchestration, registry, and drift monitoring."
+    },
+    "nlp_engineer": {
+      "title": "NLP / LLM Engineer",
+      "category": "Data Science",
+      "core_skills": ["python", "nlp", "llms", "pytorch", "deep_learning", "machine_learning"],
+      "recommended_skills": ["scikit_learn", "docker", "fastapi", "rest_apis", "aws", "git"],
+      "optional_skills": ["mlops", "kubernetes", "system_design"],
+      "base_salary_min_lpa": 8.5,
+      "base_salary_max_lpa": 22.0,
+      "experience_multiplier": 1.90,
+      "description": "Develops conversational AI systems, RAG pipelines, LLM fine-tuning, and semantic search architectures."
+    },
+    "backend_developer": {
+      "title": "Backend Software Engineer",
+      "category": "Software Engineering",
+      "core_skills": ["python", "rest_apis", "postgresql", "docker", "git", "data_structures_algorithms"],
+      "recommended_skills": ["fastapi", "django", "redis", "system_design", "linux", "ci_cd"],
+      "optional_skills": ["aws", "kubernetes", "mongodb", "microservices"],
+      "base_salary_min_lpa": 6.0,
+      "base_salary_max_lpa": 15.5,
+      "experience_multiplier": 1.60,
+      "description": "Architects resilient server-side applications, database schemas, REST APIs, and microservices."
+    },
+    "full_stack_developer": {
+      "title": "Full Stack Developer",
+      "category": "Software Engineering",
+      "core_skills": ["javascript", "react", "node_js", "python", "postgresql", "rest_apis", "git"],
+      "recommended_skills": ["typescript", "docker", "fastapi", "mongodb", "ci_cd"],
+      "optional_skills": ["aws", "redis", "system_design", "tailwind"],
+      "base_salary_min_lpa": 5.5,
+      "base_salary_max_lpa": 16.0,
+      "experience_multiplier": 1.60,
+      "description": "Builds end-to-end user interfaces, web applications, backend services, and database layers."
+    },
+    "cloud_architect": {
+      "title": "Cloud / DevOps Architect",
+      "category": "Cloud & Infrastructure",
+      "core_skills": ["aws", "docker", "kubernetes", "terraform", "ci_cd", "linux", "system_design"],
+      "recommended_skills": ["gcp", "azure", "python", "bash", "git"],
+      "optional_skills": ["prometheus", "grafana", "microservices"],
+      "base_salary_min_lpa": 9.0,
+      "base_salary_max_lpa": 24.0,
+      "experience_multiplier": 1.95,
+      "description": "Architects secure, scalable multi-cloud infrastructure, automation pipelines, and site reliability."
+    },
+    "ai_product_manager": {
+      "title": "AI Product Manager",
+      "category": "Product & Strategy",
+      "core_skills": ["machine_learning", "business_intelligence", "agile_scrum", "communication", "leadership", "problem_solving"],
+      "recommended_skills": ["sql", "python", "llms", "statistics", "collaboration"],
+      "optional_skills": ["tableau", "power_bi", "user_research"],
+      "base_salary_min_lpa": 8.0,
+      "base_salary_max_lpa": 22.0,
+      "experience_multiplier": 1.70,
+      "description": "Bridges machine learning technical teams and executive business strategy to build high-impact AI products."
+    },
+    "cv_engineer": {
+      "title": "Computer Vision Engineer",
+      "category": "Data Science",
+      "core_skills": ["python", "computer_vision", "deep_learning", "pytorch", "tensorflow", "cplusplus"],
+      "recommended_skills": ["scikit_learn", "docker", "rest_apis", "linux", "git"],
+      "optional_skills": ["mlops", "aws", "edge_computing", "ros"],
+      "base_salary_min_lpa": 8.0,
+      "base_salary_max_lpa": 20.5,
+      "experience_multiplier": 1.80,
+      "description": "Designs deep learning algorithms for video analysis, object detection, robotics, and image processing."
+    }
+  }
+}

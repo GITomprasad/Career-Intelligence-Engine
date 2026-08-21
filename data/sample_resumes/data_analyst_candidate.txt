@@ -1,0 +1,40 @@
+OM PRAKASH SAHU
+Email: omprakash.sahu@email.com | Phone: +91 9876543210
+LinkedIn: linkedin.com/in/omprakash-sahu | GitHub: github.com/omprakash-sahu
+Location: Bangalore, India
+
+PROFESSIONAL SUMMARY
+Aspiring Data Analyst with strong hands-on experience in SQL, Python, Excel, Power BI, and statistical analysis. Proven track record of turning business data into executive dashboards and actionable business metrics.
+
+EDUCATION
+Bachelor of Technology in Computer Science & Engineering (2020 - 2024)
+National Institute of Technology, Rourkela | CGPA: 8.6 / 10.0
+
+TECHNICAL SKILLS
+- Programming Languages: Python, SQL (PostgreSQL, MySQL), R
+- Data Analysis & BI: Power BI, Tableau, Advanced Excel (VBA, Macros, Pivot Tables), DAX
+- Libraries: Pandas, NumPy, Matplotlib, Seaborn, Scikit-learn
+- Databases & Tools: PostgreSQL, MySQL, Git, GitHub, Jupyter Notebooks, JIRA
+- Core Competencies: Statistical Analysis, A/B Testing, KPI Dashboards, ETL Pipelines, Data Cleansing
+
+WORK EXPERIENCE & INTERNSHIPS
+Data Analytics Intern | FinTech Solutions Pvt. Ltd. (Jan 2024 - June 2024)
+- Built interactive Power BI dashboards tracking monthly active users (MAU) and churn rates across 250,000+ customers.
+- Wrote complex SQL queries, window functions, and CTEs to extract data from PostgreSQL tables, reducing reporting query execution time by 35%.
+- Performed exploratory data analysis (EDA) and cohort analysis using Python (Pandas, Seaborn) to uncover key retention drivers.
+
+PROJECTS
+1. E-Commerce Sales & Customer Segmentation Analytics
+- Ingested 100k+ transaction records, cleaned raw data with Pandas, and modeled customer lifetime value (CLV).
+- Designed interactive 4-page Power BI dashboard with dynamic KPI drill-downs, increasing insights discovery speed by 40%.
+- Tech Stack: Python, SQL, Power BI, Pandas, Matplotlib.
+
+2. Healthcare Patient Readmission Predictive Dashboard
+- Conducted statistical hypothesis testing and built exploratory charts on 50k patient medical records.
+- Deployed a Tableau dashboard highlighting critical risk factors for early hospital readmissions.
+- Tech Stack: Python, Tableau, Statistics, Excel.
+
+CERTIFICATIONS
+- Microsoft Certified: Power BI Data Analyst Associate (PL-300)
+- Google Data Analytics Professional Certificate (Coursera)
+- Advanced SQL for Data Scientists (LinkedIn Learning)

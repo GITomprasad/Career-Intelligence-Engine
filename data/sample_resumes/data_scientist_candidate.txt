@@ -1,0 +1,40 @@
+AARAV MEHTA
+Email: aarav.mehta@datascience.io | Phone: +91 9123456780
+LinkedIn: linkedin.com/in/aarav-mehta | GitHub: github.com/aarav-mehta
+Location: Hyderabad, India
+
+PROFESSIONAL SUMMARY
+Data Scientist with 2+ years of experience in developing machine learning models, statistical inference, NLP pipelines, and data-driven solutions. Passionate about end-to-end ML lifecycles from EDA to model deployment.
+
+EDUCATION
+Master of Technology in Artificial Intelligence & Data Science (2021 - 2023)
+Indian Institute of Technology, Hyderabad | CGPA: 9.1 / 10.0
+Bachelor of Technology in Computer Science (2017 - 2021) | CGPA: 8.8 / 10.0
+
+TECHNICAL SKILLS
+- Programming & Scripting: Python, SQL, C++, Bash
+- Machine Learning & Deep Learning: Scikit-learn, XGBoost, LightGBM, PyTorch, TensorFlow, Keras
+- NLP & LLMs: SpaCy, NLTK, HuggingFace Transformers, BERT, Prompt Engineering, LangChain
+- Data Science Stack: Pandas, NumPy, SciPy, Matplotlib, Seaborn, Feature Engineering
+- Cloud, MLOps & Tools: Docker, Git, MLflow, FastAPI, AWS (S3, EC2), PostgreSQL, Linux
+
+PROFESSIONAL EXPERIENCE
+Associate Data Scientist | CogniTech AI Labs (July 2023 - Present)
+- Engineered XGBoost and Random Forest predictive models for customer churn forecasting with an ROC-AUC of 0.89.
+- Built automated feature engineering and preprocessing pipelines using Scikit-Learn pipelines and Pandas, reducing model retraining time by 50%.
+- Created RESTful microservice with FastAPI and Docker to serve real-time inferences with <60ms p99 latency.
+- Collaborated with product and engineering teams using Agile Scrum methodologies to deliver AI features.
+
+KEY PROJECTS
+1. Intelligent Customer Support NLP Intent Classifier & RAG Agent
+- Built an NLP text classification system with HuggingFace BERT and fine-tuned embeddings on 40,000+ support tickets (94% F1-score).
+- Developed a LangChain-powered RAG pipeline with vector search for automated resolution of common queries.
+- Tech Stack: Python, PyTorch, Transformers, LangChain, FastAPI, Docker.
+
+2. Financial Fraud Detection with Anomaly Detection & Imbalanced Learning
+- Implemented SMOTE, Isolation Forests, and ensemble tree models on 1.2M credit card transactions, detecting fraudulent patterns with 91% recall.
+- Tech Stack: Python, Scikit-learn, XGBoost, Pandas, SQL.
+
+PUBLICATIONS & CERTIFICATIONS
+- AWS Certified Machine Learning - Specialty
+- DeepLearning.AI Deep Learning Specialization (Andrew Ng)

@@ -1,0 +1,33 @@
+PRIYA SHARMA
+Email: priya.sharma@mleng.dev | Phone: +91 9988776655
+LinkedIn: linkedin.com/in/priyasharma-ml | GitHub: github.com/priyasharma
+Location: Bangalore, India
+
+PROFESSIONAL SUMMARY
+Machine Learning Engineer with 3+ years of experience specializing in scalable ML systems, MLOps, deep learning architectures, and production model serving on Kubernetes and AWS.
+
+EDUCATION
+B.Tech in Computer Science & Engineering (2019 - 2023)
+VIT Vellore | CGPA: 8.9 / 10.0
+
+TECHNICAL SKILLS
+- Languages: Python, C++, SQL, Bash
+- Frameworks & DL: PyTorch, TensorFlow, Scikit-learn, ONNX, TensorRT
+- MLOps & Infrastructure: Docker, Kubernetes, CI/CD, MLflow, Kubeflow, AWS (EC2, S3, SageMaker, Lambda), Linux
+- Backend & Serving: FastAPI, gRPC, Triton Inference Server, Redis, PostgreSQL
+- Engineering Practices: System Design, Git, Agile, Unit Testing, Distributed Training
+
+EXPERIENCE
+Machine Learning Engineer | Apex AI Systems (June 2023 - Present)
+- Designed and maintained automated CI/CD MLOps pipelines using Docker, GitHub Actions, and Kubernetes, deploying 12+ computer vision and NLP models.
+- Optimized PyTorch model inference using ONNX Runtime and TensorRT, achieving 3.8x throughput speedup and cutting cloud GPU compute costs by 45%.
+- Implemented real-time data drift and concept drift monitoring with Prometheus and MLflow.
+
+PROJECTS
+1. Real-time Distributed Model Inference Engine
+- Architected a high-concurrency model serving platform using FastAPI, Triton, and Redis caching handling 1,500 req/sec at <30ms latency.
+- Tech Stack: Python, PyTorch, Docker, Kubernetes, Triton, Redis, AWS.
+
+2. MLOps Automated Training & Deployment Pipeline
+- Built end-to-end reproducible pipeline from S3 data ingestion to automated model evaluation and containerized deployment.
+- Tech Stack: MLflow, Docker, AWS SageMaker, GitHub Actions, PyTorch.
