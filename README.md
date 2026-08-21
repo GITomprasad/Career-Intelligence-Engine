@@ -153,7 +153,7 @@ Career Intelligence Engine/
 
 ### 1. Clone & Set Up Virtual Environment
 ```bash
-git clone https://github.com/your-username/career-intelligence-engine.git
+git clone https://github.com/GITomprasad/Career-Intelligence-Engine.git
 cd "Career Intelligence Engine"
 
 # Create virtual environment
