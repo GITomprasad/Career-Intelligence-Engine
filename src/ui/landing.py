@@ -36,12 +36,12 @@ def render_landing_page(components: dict):
 
     with col_center:
         with st.container():
-            # File Uploader
+            # Universal Multi-Format Resume Uploader (Documents & Image OCR)
             uploaded_file = st.file_uploader(
-                "Drop your resume here (PDF or TXT):",
-                type=["pdf", "txt"],
+                "Drop your resume here (PDF, Word DOCX/DOC, Images JPG/PNG/WEBP, TXT, RTF, MD, JSON):",
+                type=["pdf", "docx", "doc", "jpg", "jpeg", "png", "webp", "tiff", "bmp", "txt", "rtf", "md", "html", "htm", "json"],
                 label_visibility="visible",
-                help="Upload your latest resume in PDF or plain text format for immediate ATS compatibility scoring."
+                help="Upload your resume in any format — PDF, Microsoft Word, scanned/photo images (JPG/PNG/WEBP via AI OCR), Plain Text, RTF, Markdown, or JSON."
             )
 
             if uploaded_file is not None:

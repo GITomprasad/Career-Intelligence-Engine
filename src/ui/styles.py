@@ -1,7 +1,7 @@
 """
 Centralized CSS Design System for Career Intelligence Engine v2.
-Strict, Permanent Dark-Mode-Only Architecture.
-Deep Slate Canvas (#0B0F19) · Elevated Surface Cards (#1E293B) · Vivid Indigo (#818CF8) · Accessible High-Contrast Typography
+Dual-Engine Contrast System: Perfect Dark Mode + Flawless Color-Corrected Light Mode.
+Ensures 100% text legibility, accessible contrast ratios, and crisp button text in both themes.
 """
 
 def get_css() -> str:
@@ -10,9 +10,9 @@ def get_css() -> str:
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
     /* =========================================================================
-       PERMANENT DARK MODE THEME TOKENS
+       THEME TOKENS: DEFAULT & DARK MODE
        ========================================================================= */
-    :root {
+    :root, [data-theme="dark"], [data-base="dark"], .stApp[data-theme="dark"], .stApp[data-base="dark"] {
         --bg-base: #0B0F19;
         --bg-surface: #1E293B;
         --bg-surface-alt: #0F172A;
@@ -44,9 +44,43 @@ def get_css() -> str:
     }
 
     /* =========================================================================
-       GLOBAL DARK CANVAS & TYPOGRAPHY ENFORCEMENT
+       THEME TOKENS: COLOR-CORRECTED LIGHT MODE (When Selected in Settings)
        ========================================================================= */
-    html, body, [class*="css"], .stApp, [data-testid="stAppViewContainer"], [data-testid="stVerticalBlock"] {
+    [data-theme="light"], [data-base="light"], .stApp[data-theme="light"], .stApp[data-base="light"], body[data-theme="light"] {
+        --bg-base: #F8F7F5;
+        --bg-surface: #FFFFFF;
+        --bg-surface-alt: #F1F5F9;
+        --bg-surface-hover: #EEF2FF;
+        --border-color: #CBD5E1;
+        --border-subtle: #E2E8F0;
+        --text-primary: #0F172A;
+        --text-secondary: #334155;
+        --text-muted: #64748B;
+        --accent-indigo: #4F46E5;
+        --accent-indigo-hover: #4338CA;
+        --accent-bg: #EEF2FF;
+        --color-success: #16A34A;
+        --color-success-bg: #DCFCE7;
+        --color-success-text: #14532D;
+        --color-warning: #D97706;
+        --color-warning-bg: #FEF3C7;
+        --color-warning-text: #78350F;
+        --color-danger: #DC2626;
+        --color-danger-bg: #FEE2E2;
+        --color-danger-text: #7F1D1D;
+        --btn-bg: #FFFFFF;
+        --btn-text: #0F172A;
+        --btn-border: #CBD5E1;
+        --uploader-bg: #FFFFFF;
+        --uploader-border: #4F46E5;
+        --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+        --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    /* =========================================================================
+       BASE TYPOGRAPHY & CANVAS
+       ========================================================================= */
+    html, body, [class*="css"], .stApp {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
         color: var(--text-primary) !important;
         background-color: var(--bg-base) !important;
@@ -92,7 +126,7 @@ def get_css() -> str:
     }
 
     /* =========================================================================
-       NATIVE STREAMLIT BORDERED CONTAINERS AS DARK CARDS
+       NATIVE STREAMLIT BORDERED CONTAINERS AS CARDS
        ========================================================================= */
     [data-testid="stVerticalBlockBorderWrapper"] {
         background-color: var(--bg-surface) !important;
@@ -105,7 +139,6 @@ def get_css() -> str:
     }
     [data-testid="stVerticalBlockBorderWrapper"]:hover {
         box-shadow: var(--card-shadow-hover) !important;
-        border-color: #475569 !important;
     }
 
     /* Standalone HTML Card */
@@ -121,7 +154,6 @@ def get_css() -> str:
     }
     .cie-card:hover {
         box-shadow: var(--card-shadow-hover);
-        border-color: #475569;
     }
 
     /* Hero Score Card */
@@ -229,7 +261,7 @@ def get_css() -> str:
     .landing-title {
         font-size: 2.3rem;
         font-weight: 850;
-        color: var(--text-primary);
+        color: var(--text-primary) !important;
         letter-spacing: -0.03em;
         margin-bottom: 8px;
         line-height: 1.2;
@@ -241,7 +273,7 @@ def get_css() -> str:
     }
     .landing-subtitle {
         font-size: 1.05rem;
-        color: var(--text-secondary);
+        color: var(--text-secondary) !important;
         margin-bottom: 22px;
         line-height: 1.5;
     }
@@ -358,9 +390,9 @@ def get_css() -> str:
         font-weight: 750 !important;
     }
 
-    /* -------------------------------------------------------------
-       ACCESSIBLE BUTTONS & SAMPLE CHIPS (Dark Theme)
-       ------------------------------------------------------------- */
+    /* =========================================================================
+       COLOR-CORRECTED ACCESSIBLE BUTTONS & SAMPLE CHIPS (Dual Theme)
+       ========================================================================= */
     .stButton > button {
         background-color: var(--btn-bg) !important;
         color: var(--btn-text) !important;
@@ -373,12 +405,19 @@ def get_css() -> str:
         transition: all 0.18s ease-in-out !important;
         width: 100% !important;
     }
+    .stButton > button p, .stButton > button span, .stButton > button div {
+        color: var(--btn-text) !important;
+        font-weight: 750 !important;
+    }
     .stButton > button:hover {
         background-color: var(--accent-bg) !important;
         color: var(--accent-indigo) !important;
         border-color: var(--accent-indigo) !important;
         transform: translateY(-2px) !important;
         box-shadow: var(--card-shadow-hover) !important;
+    }
+    .stButton > button:hover p, .stButton > button:hover span {
+        color: var(--accent-indigo) !important;
     }
     .stButton > button:active, .stButton > button:focus {
         border-color: var(--accent-indigo) !important;
@@ -390,7 +429,10 @@ def get_css() -> str:
         background-color: var(--accent-indigo) !important;
         color: #FFFFFF !important;
         border: 1.5px solid var(--accent-indigo) !important;
-        box-shadow: 0 2px 6px rgba(129, 140, 248, 0.35) !important;
+        box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35) !important;
+    }
+    .stButton > button[kind="primary"] p, .stButton > button[kind="primary"] span {
+        color: #FFFFFF !important;
     }
     .stButton > button[kind="primary"]:hover, .stButton > button[data-testid="stBaseButton-primary"]:hover {
         background-color: var(--accent-indigo-hover) !important;
@@ -399,9 +441,9 @@ def get_css() -> str:
         transform: translateY(-2px) !important;
     }
 
-    /* -------------------------------------------------------------
-       DARK RESUME UPLOAD COMPONENT
-       ------------------------------------------------------------- */
+    /* =========================================================================
+       ACCESSIBLE RESUME UPLOAD COMPONENT (Dual Theme)
+       ========================================================================= */
     [data-testid="stFileUploader"] {
         width: 100%;
         margin-bottom: 8px;
@@ -430,7 +472,7 @@ def get_css() -> str:
         font-size: 1rem !important;
         font-weight: 750 !important;
     }
-    [data-testid="stFileUploaderDropzoneInstructions"] span {
+    [data-testid="stFileUploaderDropzoneInstructions"] span, [data-testid="stFileUploaderDropzoneInstructions"] p {
         color: var(--text-primary) !important;
         font-weight: 750 !important;
     }
@@ -450,7 +492,7 @@ def get_css() -> str:
         font-weight: 750 !important;
         padding: 8px 20px !important;
         margin-top: 4px !important;
-        box-shadow: 0 2px 4px rgba(129, 140, 248, 0.25) !important;
+        box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25) !important;
     }
     [data-testid="stFileUploader"] button:hover {
         background-color: var(--accent-indigo-hover) !important;
@@ -464,7 +506,7 @@ def get_css() -> str:
         font-weight: 700 !important;
     }
 
-    /* Form Controls & Inputs (Dark Theme) */
+    /* Form Controls & Inputs (Dual Theme) */
     .stSelectbox label, .stMultiSelect label, .stSlider label, .stTextArea label {
         color: var(--text-primary) !important;
         font-weight: 750 !important;

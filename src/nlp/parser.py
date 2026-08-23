@@ -1,15 +1,40 @@
 """
-Resume Parser Engine.
-Extracts contact info, education, skills, projects, and work experience from PDF and TXT resumes.
+Universal Multi-Format Resume Parser Engine.
+Extracts contact info, education, skills, projects, and work experience from:
+- Documents: PDF (.pdf), Word (.docx, .doc), Rich Text (.rtf), Plain Text (.txt, .md), HTML (.html), JSON (.json)
+- Images: JPG (.jpg, .jpeg), PNG (.png), WEBP (.webp), TIFF (.tiff, .tif), BMP (.bmp) via Neural OCR.
 """
 
 import io
+import json
+import logging
+import os
 import re
-from typing import Dict, Any, List, Optional
+import zipfile
+import xml.etree.ElementTree as ET
+from typing import Dict, Any, List, Optional, Union
+import numpy as np
+from PIL import Image
 import pypdf
+
+try:
+    import docx
+    HAS_DOCX = True
+except ImportError:
+    HAS_DOCX = False
+
+try:
+    from rapidocr_onnxruntime import RapidOCR
+    OCR_ENGINE = RapidOCR()
+    HAS_OCR = True
+except Exception as e:
+    OCR_ENGINE = None
+    HAS_OCR = False
 
 from .skill_extractor import SkillExtractor
 from .experience_analyzer import ExperienceAnalyzer
+
+logger = logging.getLogger(__name__)
 
 
 class ResumeParser:
@@ -20,25 +45,41 @@ class ResumeParser:
     def parse(self, input_source: Any, filename: str = "") -> Dict[str, Any]:
         """
         Parses resume from either file path, bytes, file-like object, or raw text.
+        Supports PDF, DOCX, DOC, JPG, PNG, WEBP, RTF, TXT, MD, HTML, and JSON.
         """
         text = self._extract_raw_text(input_source, filename)
         if not text or not text.strip():
             return {
                 "success": False,
-                "error": "No readable text could be extracted from the document.",
+                "error": "No readable text could be extracted from the document. Please ensure the file is clear and not empty or password-protected.",
                 "raw_text": "",
                 "profile": {}
             }
 
         # Clean text
         cleaned_text = self._clean_text(text)
-        
-        # Extract components
+
+        # Check if structured JSON resume
+        if filename.lower().endswith(".json") or (cleaned_text.startswith("{") and cleaned_text.endswith("}")):
+            json_profile = self._try_parse_json_resume(cleaned_text)
+            if json_profile:
+                return {
+                    "success": True,
+                    "raw_text": cleaned_text,
+                    "sections": {},
+                    "profile": json_profile
+                }
+
+        # Extract components from freeform text
         contact_info = self._extract_contact_info(cleaned_text)
         sections = self._segment_sections(cleaned_text)
         education_info = self._extract_education(cleaned_text, sections.get("education", ""))
         skills_info = self.skill_extractor.extract_skills(cleaned_text)
-        exp_info = self.exp_analyzer.analyze_experience(cleaned_text, sections.get("education", ""))
+        exp_info = self.exp_analyzer.analyze_experience(
+            cleaned_text,
+            education_text=sections.get("education", ""),
+            experience_text=sections.get("experience", "")
+        )
         projects = self._extract_projects(cleaned_text, sections.get("projects", ""))
         certifications = self._extract_certifications(cleaned_text, sections.get("certifications", ""))
 
@@ -49,6 +90,7 @@ class ResumeParser:
             "location": contact_info["location"],
             "linkedin": contact_info["linkedin"],
             "github": contact_info["github"],
+            "portfolio": contact_info.get("portfolio", ""),
             "education": education_info,
             "skills": skills_info["skill_names"],
             "skill_ids": skills_info["skill_ids"],
@@ -71,120 +113,312 @@ class ResumeParser:
         }
 
     def _extract_raw_text(self, input_source: Any, filename: str = "") -> str:
-        """Extracts plain text from various input types."""
-        # 1. Plain text string
+        """Extracts plain text across all supported file formats."""
+        # 1. Plain text string passed directly
         if isinstance(input_source, str):
-            # Check if it's a file path
-            if (input_source.endswith(".pdf") or input_source.endswith(".txt")) and len(input_source) < 500:
-                try:
-                    if input_source.endswith(".pdf"):
-                        reader = pypdf.PdfReader(input_source)
-                        return "\n".join([page.extract_text() or "" for page in reader.pages])
-                    else:
-                        with open(input_source, "r", encoding="utf-8", errors="ignore") as f:
-                            return f.read()
-                except Exception:
-                    return input_source
+            if (any(input_source.lower().endswith(ext) for ext in [
+                ".pdf", ".docx", ".doc", ".jpg", ".jpeg", ".png", ".webp",
+                ".txt", ".md", ".rtf", ".html", ".htm", ".json"
+            ])) and len(input_source) < 500:
+                if os.path.exists(input_source):
+                    try:
+                        with open(input_source, "rb") as f:
+                            return self._extract_from_bytes(f.read(), os.path.basename(input_source))
+                    except Exception as e:
+                        logger.error(f"Error reading file path {input_source}: {e}")
             return input_source
 
-        # 2. Bytes / ByteIO
-        if isinstance(input_source, bytes) or hasattr(input_source, "read"):
-            stream = io.BytesIO(input_source) if isinstance(input_source, bytes) else input_source
-            if filename.lower().endswith(".pdf") or not filename:
-                try:
-                    reader = pypdf.PdfReader(stream)
-                    pages_text = [page.extract_text() or "" for page in reader.pages]
-                    return "\n".join(pages_text)
-                except Exception:
-                    # Fallback to UTF-8 decoding if not valid PDF
-                    if isinstance(input_source, bytes):
-                        return input_source.decode("utf-8", errors="ignore")
-                    stream.seek(0)
-                    return stream.read().decode("utf-8", errors="ignore")
-            else:
-                if isinstance(input_source, bytes):
-                    return input_source.decode("utf-8", errors="ignore")
-                return stream.read().decode("utf-8", errors="ignore")
+        # 2. Bytes or Stream
+        if isinstance(input_source, bytes):
+            return self._extract_from_bytes(input_source, filename)
+
+        if hasattr(input_source, "read"):
+            try:
+                data = input_source.read()
+                fname = getattr(input_source, "name", filename)
+                return self._extract_from_bytes(data, fname)
+            except Exception as e:
+                logger.error(f"Error reading stream: {e}")
 
         return ""
 
+    def _extract_from_bytes(self, raw_bytes: bytes, filename: str = "") -> str:
+        """Dispatches binary data to the corresponding format parser."""
+        if not raw_bytes:
+            return ""
+
+        fn = filename.lower()
+
+        # 1. Image Formats (JPG, JPEG, PNG, WEBP, TIFF, BMP) via Neural OCR
+        image_extensions = (".jpg", ".jpeg", ".png", ".webp", ".tiff", ".tif", ".bmp", ".jfif")
+        is_image_bytes = (
+            raw_bytes.startswith(b"\xff\xd8\xff") or  # JPEG
+            raw_bytes.startswith(b"\x89PNG\r\n\x1a\n") or  # PNG
+            raw_bytes.startswith(b"RIFF") and b"WEBP" in raw_bytes[:16] or  # WEBP
+            raw_bytes.startswith(b"BM")  # BMP
+        )
+
+        if fn.endswith(image_extensions) or is_image_bytes:
+            img_text = self._extract_from_image(raw_bytes)
+            if img_text:
+                return img_text
+
+        # 2. PDF Parser
+        if fn.endswith(".pdf") or raw_bytes.startswith(b"%PDF-"):
+            try:
+                stream = io.BytesIO(raw_bytes)
+                reader = pypdf.PdfReader(stream)
+                text_pages = [page.extract_text() or "" for page in reader.pages]
+                full_pdf_text = "\n".join(text_pages).strip()
+                if full_pdf_text and len(full_pdf_text) > 30:
+                    return full_pdf_text
+            except Exception as e:
+                logger.warning(f"PDF extraction warning: {e}")
+
+        # 3. DOCX Parser (Word OpenXML)
+        if fn.endswith(".docx") or raw_bytes.startswith(b"PK\x03\x04"):
+            # Try python-docx first
+            if HAS_DOCX:
+                try:
+                    doc = docx.Document(io.BytesIO(raw_bytes))
+                    doc_paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
+                    # Also include tables
+                    for table in doc.tables:
+                        for row in table.rows:
+                            row_text = " | ".join([cell.text.strip() for cell in row.cells if cell.text.strip()])
+                            if row_text:
+                                doc_paragraphs.append(row_text)
+                    extracted = "\n".join(doc_paragraphs).strip()
+                    if extracted:
+                        return extracted
+                except Exception as e:
+                    logger.warning(f"python-docx extraction warning: {e}")
+
+            # Built-in XML ZIP Fallback for DOCX
+            try:
+                with zipfile.ZipFile(io.BytesIO(raw_bytes)) as z:
+                    if "word/document.xml" in z.namelist():
+                        xml_content = z.read("word/document.xml")
+                        tree = ET.fromstring(xml_content)
+                        texts = [node.text for node in tree.iter() if node.text]
+                        extracted_xml = " ".join(texts).strip()
+                        if extracted_xml:
+                            return extracted_xml
+            except Exception as e:
+                logger.warning(f"DOCX XML zip extraction warning: {e}")
+
+        # 4. RTF Parser (.rtf)
+        if fn.endswith(".rtf") or raw_bytes.startswith(b"{\\rtf"):
+            try:
+                rtf_str = raw_bytes.decode("utf-8", errors="ignore")
+                rtf_str = re.sub(r"\\par\b|\\line\b", "\n", rtf_str)
+                rtf_clean = re.sub(r"\\[a-z0-9]+-?", " ", rtf_str)
+                rtf_clean = re.sub(r"[{}]", " ", rtf_clean)
+                return rtf_clean.strip()
+            except Exception as e:
+                logger.warning(f"RTF decode warning: {e}")
+
+        # 5. HTML Parser (.html, .htm)
+        if fn.endswith(".html") or fn.endswith(".htm") or b"<html" in raw_bytes.lower():
+            try:
+                html_str = raw_bytes.decode("utf-8", errors="ignore")
+                html_str = re.sub(r"<style[\s\S]*?</style>", "", html_str, flags=re.IGNORECASE)
+                html_str = re.sub(r"<script[\s\S]*?</script>", "", html_str, flags=re.IGNORECASE)
+                text_clean = re.sub(r"<[^>]+>", "\n", html_str)
+                return text_clean.strip()
+            except Exception as e:
+                logger.warning(f"HTML decode warning: {e}")
+
+        # 6. Generic Text Decoder (UTF-8, UTF-16, Latin-1, CP1252)
+        for enc in ["utf-8", "utf-8-sig", "utf-16", "latin-1", "cp1252"]:
+            try:
+                decoded = raw_bytes.decode(enc)
+                if decoded and len(decoded.strip()) > 10:
+                    return decoded
+            except UnicodeDecodeError:
+                continue
+
+        # Last resort: ASCII decode ignoring non-printable bytes
+        return "".join([chr(b) for b in raw_bytes if 32 <= b <= 126 or b in (10, 13, 9)])
+
+    def _extract_from_image(self, img_bytes: bytes) -> str:
+        """Extracts text from image bytes using RapidOCR."""
+        if not HAS_OCR or OCR_ENGINE is None:
+            logger.warning("OCR engine not available for image parsing.")
+            return ""
+
+        try:
+            image = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+            img_np = np.array(image)
+            ocr_result, _ = OCR_ENGINE(img_np)
+
+            if not ocr_result:
+                return ""
+
+            lines = []
+            for item in ocr_result:
+                # RapidOCR item format: [box, text, score]
+                if len(item) >= 2 and isinstance(item[1], str):
+                    text_line = item[1].strip()
+                    if text_line:
+                        lines.append(text_line)
+
+            return "\n".join(lines)
+        except Exception as e:
+            logger.error(f"Error running OCR on resume image: {e}", exc_info=True)
+            return ""
+
     def _clean_text(self, text: str) -> str:
-        # Standardize line breaks and spaces
         text = re.sub(r"\r\n|\r", "\n", text)
         text = re.sub(r"\t", " ", text)
+        text = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]", "", text)
         text = re.sub(r" +", " ", text)
         return text.strip()
 
+    def _try_parse_json_resume(self, text: str) -> Optional[Dict[str, Any]]:
+        """Parses structured JSON resume schema (e.g. JSONResume standard)."""
+        try:
+            data = json.loads(text)
+            basics = data.get("basics", data)
+            name = basics.get("name", "Candidate")
+            email = basics.get("email", "Not Provided")
+            phone = basics.get("phone", "Not Provided")
+            location = basics.get("location", {}).get("city", "Not Specified") if isinstance(basics.get("location"), dict) else str(basics.get("location", "Not Specified"))
+
+            raw_skills = []
+            if "skills" in data and isinstance(data["skills"], list):
+                for s in data["skills"]:
+                    if isinstance(s, dict):
+                        raw_skills.append(s.get("name", ""))
+                        raw_skills.extend(s.get("keywords", []))
+                    elif isinstance(s, str):
+                        raw_skills.append(s)
+
+            skills_text = " ".join(raw_skills) + " " + text
+            skills_info = self.skill_extractor.extract_skills(skills_text)
+            exp_info = self.exp_analyzer.analyze_experience(text)
+
+            return {
+                "name": name,
+                "email": email,
+                "phone": phone,
+                "location": location,
+                "linkedin": basics.get("linkedin", ""),
+                "github": basics.get("github", ""),
+                "portfolio": basics.get("website", basics.get("url", "")),
+                "education": self._extract_education(text, ""),
+                "skills": skills_info["skill_names"],
+                "skill_ids": skills_info["skill_ids"],
+                "skills_by_category": skills_info["by_category"],
+                "skills_count": skills_info["total_count"],
+                "experience_years": exp_info["estimated_years"],
+                "seniority_level": exp_info["seniority_level"],
+                "experience_bracket": exp_info["experience_bracket"],
+                "action_verb_score": exp_info["action_verb_score"],
+                "projects": data.get("projects", []),
+                "certifications": [c.get("name", "") if isinstance(c, dict) else str(c) for c in data.get("certificates", data.get("certifications", []))],
+                "summary": basics.get("summary", "")[:400]
+            }
+        except Exception:
+            return None
+
     def _extract_contact_info(self, text: str) -> Dict[str, str]:
         lines = [line.strip() for line in text.split("\n") if line.strip()]
-        
-        # Name: Usually first 1-3 lines
-        candidate_name = "Candidate"
-        for line in lines[:4]:
-            clean_line = re.sub(r"[^a-zA-Z\s]", "", line).strip()
-            # Ignore headers like 'RESUME', 'CURRICULUM VITAE'
-            if clean_line.upper() in ["RESUME", "CURRICULUM VITAE", "CV", "BIO"]:
-                continue
-            words = clean_line.split()
-            if 2 <= len(words) <= 4 and all(len(w) >= 2 for w in words):
-                candidate_name = clean_line.title()
+
+        # 1. Explicit Name Matching
+        candidate_name = None
+        for line in lines[:8]:
+            name_m = re.search(r"^(?:Name|Full\s*Name|Candidate\s*Name)\s*[:=]\s*([A-Za-z\s\.\-]{2,40})", line, re.IGNORECASE)
+            if name_m:
+                candidate_name = name_m.group(1).strip().title()
                 break
-                
-        # Email
+
+        # 2. Heuristic Top-Line Name Search
+        if not candidate_name:
+            noise_words = {
+                "RESUME", "CURRICULUM VITAE", "CV", "BIO", "PROFILE", "SUMMARY", "CONTACT",
+                "EDUCATION", "EXPERIENCE", "SKILLS", "PROJECTS", "CERTIFICATIONS", "PAGE",
+                "ABOUT ME", "OBJECTIVE", "EMAIL", "PHONE", "LINKEDIN", "GITHUB", "PORTFOLIO"
+            }
+            for line in lines[:6]:
+                if "@" in line or "http" in line or ".com" in line or re.search(r"\d{3}", line) or "|" in line:
+                    continue
+                clean_line = re.sub(r"[^a-zA-Z\s\.]", "", line).strip()
+                words = clean_line.split()
+                if 2 <= len(words) <= 4 and all(len(w) >= 2 for w in words):
+                    if not any(w.upper() in noise_words for w in words):
+                        candidate_name = clean_line.title()
+                        break
+
+        # 3. Email Extraction
         email_match = re.search(r"[\w\.-]+@[\w\.-]+\.\w+", text)
         email = email_match.group(0) if email_match else "Not Provided"
-        
-        # Phone
-        phone_match = re.search(r"(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}|\+91[-.\s]?\d{10}|\b\d{10}\b", text)
+
+        if not candidate_name and email != "Not Provided":
+            prefix = email.split("@")[0]
+            parts = re.split(r"[._\-0-9]+", prefix)
+            clean_parts = [p.capitalize() for p in parts if len(p) >= 2]
+            if 1 <= len(clean_parts) <= 3:
+                candidate_name = " ".join(clean_parts)
+            else:
+                candidate_name = "Candidate"
+        elif not candidate_name:
+            candidate_name = "Candidate"
+
+        # 4. Phone Extraction
+        phone_match = re.search(r"(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}|\+91[-.\s]?[6-9]\d{9}|\b[6-9]\d{9}\b|\b\d{10}\b", text)
         phone = phone_match.group(0) if phone_match else "Not Provided"
-        
-        # Location
+
+        # 5. Location Extraction
         location = "Not Specified"
         loc_patterns = [
-            r"(?:Location|Address|City)\s*:\s*([A-Za-z\s,]+)",
-            r"\b(Bangalore|Bengaluru|Hyderabad|Pune|Mumbai|Delhi|Noida|Gurgaon|Chennai|Kolkata|Ahmedabad|San Francisco|New York|London|Remote)\b"
+            r"(?:Location|Address|City|Based in)\s*[:=]?\s*([A-Za-z\s,]+)",
+            r"\b(Bangalore|Bengaluru|Hyderabad|Pune|Mumbai|Delhi|Noida|Gurgaon|Gurugram|Chennai|Kolkata|Ahmedabad|Jaipur|Kochi|Chandigarh|San Francisco|New York|London|Seattle|Austin|Berlin|Singapore|Remote)\b"
         ]
         for pat in loc_patterns:
             loc_match = re.search(pat, text, re.IGNORECASE)
             if loc_match:
-                location = loc_match.group(1).strip()
+                location = loc_match.group(1).strip().title()
                 break
 
-        # LinkedIn & GitHub
-        linkedin_match = re.search(r"(?:https?://)?(?:www\.)?linkedin\.com/in/([a-zA-Z0-9_-]+)", text, re.IGNORECASE)
+        # 6. LinkedIn & GitHub & Portfolio
+        linkedin_match = re.search(r"(?:https?://)?(?:www\.)?linkedin\.com/in/([a-zA-Z0-9_\-\.]+)", text, re.IGNORECASE)
         linkedin = f"linkedin.com/in/{linkedin_match.group(1)}" if linkedin_match else ""
-        
-        github_match = re.search(r"(?:https?://)?(?:www\.)?github\.com/([a-zA-Z0-9_-]+)", text, re.IGNORECASE)
+
+        github_match = re.search(r"(?:https?://)?(?:www\.)?github\.com/([a-zA-Z0-9_\-\.]+)", text, re.IGNORECASE)
         github = f"github.com/{github_match.group(1)}" if github_match else ""
-        
+
+        portfolio_match = re.search(r"(?:https?://)?(?:www\.)?([a-zA-Z0-9_\-\.]+\.(?:dev|io|me|app|ai|tech|net|org))\b", text, re.IGNORECASE)
+        portfolio = f"https://{portfolio_match.group(1)}" if portfolio_match and "github" not in portfolio_match.group(0).lower() and "linkedin" not in portfolio_match.group(0).lower() else ""
+
         return {
             "name": candidate_name,
             "email": email,
             "phone": phone,
             "location": location,
             "linkedin": linkedin,
-            "github": github
+            "github": github,
+            "portfolio": portfolio
         }
 
     def _segment_sections(self, text: str) -> Dict[str, str]:
         section_headers = {
-            "summary": ["summary", "professional summary", "about me", "objective", "profile"],
-            "education": ["education", "academic background", "academics", "qualifications"],
-            "experience": ["experience", "work experience", "employment", "professional experience", "internships"],
-            "projects": ["projects", "key projects", "academic projects", "personal projects", "capstone"],
-            "skills": ["skills", "technical skills", "core competencies", "technologies", "tech stack"],
-            "certifications": ["certifications", "licenses", "courses", "achievements", "publications"]
+            "summary": ["summary", "professional summary", "about me", "objective", "profile", "career objective"],
+            "education": ["education", "academic background", "academics", "qualifications", "educational details"],
+            "experience": ["experience", "work experience", "employment", "professional experience", "internships", "work history"],
+            "projects": ["projects", "key projects", "academic projects", "personal projects", "capstone", "technical projects"],
+            "skills": ["skills", "technical skills", "core competencies", "technologies", "tech stack", "programming skills"],
+            "certifications": ["certifications", "licenses", "courses", "achievements", "publications", "certificates", "awards"]
         }
-        
-        # Identify section positions
+
         header_positions = []
         lines = text.split("\n")
-        
+
         for idx, line in enumerate(lines):
             clean = line.strip().lower()
             clean = re.sub(r"[^a-z\s]", "", clean)
             for sec_name, keywords in section_headers.items():
-                if clean in keywords or any(clean.startswith(kw + " ") for kw in keywords):
+                if clean in keywords or any(clean == kw or clean.startswith(kw + " ") for kw in keywords):
                     header_positions.append((idx, sec_name))
                     break
 
@@ -194,48 +428,50 @@ class ResumeParser:
             end_idx = header_positions[i + 1][0] if i + 1 < len(header_positions) else len(lines)
             sec_text = "\n".join(lines[start_idx + 1:end_idx]).strip()
             sections[sec_name] = sec_text
-            
+
         return sections
 
     def _extract_education(self, full_text: str, edu_section: str) -> Dict[str, Any]:
         text_to_scan = edu_section if edu_section else full_text
-        
-        # Degree detection
+
         degrees = [
-            (r"\b(?:Ph\.?D|Doctor of Philosophy)\b", "Ph.D. / Doctorate"),
-            (r"\b(?:M\.?Tech|Master of Technology|M\.?S|M\.?Sc|Master of Science|M\.?C\.?A|MBA)\b", "Master's Degree"),
-            (r"\b(?:B\.?Tech|Bachelor of Technology|B\.?E|Bachelor of Engineering|B\.?S|B\.?Sc|B\.?C\.?A)\b", "Bachelor's Degree")
+            (r"\b(?:Ph\.?D|Doctor of Philosophy|Doctorate)\b", "Ph.D. / Doctorate"),
+            (r"\b(?:M\.?Tech|Master of Technology|M\.?E|Master of Engineering|M\.?S|M\.?Sc|Master of Science|M\.?C\.?A|MBA)\b", "Master's Degree"),
+            (r"\b(?:B\.?Tech|Bachelor of Technology|B\.?E|Bachelor of Engineering|B\.?S|B\.?Sc|Bachelor of Science|B\.?C\.?A|B\.?Com)\b", "Bachelor's Degree"),
+            (r"\b(?:Diploma|Associate Degree|Polytechnic)\b", "Diploma / Associate")
         ]
-        
-        detected_degree = "Bachelor's Degree" # Default assumption
+
+        detected_degree = "Bachelor's Degree"
         for pat, deg_name in degrees:
             if re.search(pat, text_to_scan, re.IGNORECASE):
                 detected_degree = deg_name
                 break
-                
-        # Major / Field
+
         majors = [
-            "Computer Science", "Artificial Intelligence", "Data Science",
-            "Information Technology", "Electrical Engineering", "Electronics",
-            "Mechanical Engineering", "Mathematics", "Statistics", "Data Analytics"
+            "Artificial Intelligence", "Data Science", "Computer Science", "Information Technology",
+            "Software Engineering", "Cybersecurity", "Electrical Engineering", "Electronics and Communication",
+            "Mechanical Engineering", "Civil Engineering", "Mathematics", "Statistics", "Data Analytics",
+            "Business Administration", "Physics"
         ]
         detected_major = "Computer Science / Related"
         for m in majors:
             if re.search(r"\b" + re.escape(m) + r"\b", text_to_scan, re.IGNORECASE):
                 detected_major = m
                 break
-                
-        # CGPA / Percentage
-        gpa_match = re.search(r"(?:CGPA|GPA|Score|Percentage)\s*[:=]?\s*(\d+(?:\.\d+)?)\s*(?:/|out of)?\s*(?:10|100|4\.0)?", text_to_scan, re.IGNORECASE)
+
+        inst_match = re.search(r"\b([A-Za-z\s]+(?:University|Institute|College|Academy|IIT|NIT|BITS|VIT|IIIT))\b", text_to_scan, re.IGNORECASE)
+        institution = inst_match.group(1).strip() if inst_match else "Accredited University"
+
+        gpa_match = re.search(r"(?:CGPA|GPA|Score|Percentage|Marks)\s*[:=]?\s*(\d+(?:\.\d+)?)\s*(?:/|out of)?\s*(?:10|100|4\.0|4)?%?", text_to_scan, re.IGNORECASE)
         gpa_str = gpa_match.group(0) if gpa_match else "N/A"
-        
-        # Year
+
         year_match = re.search(r"\b(201\d|202\d)\b", text_to_scan)
         grad_year = year_match.group(0) if year_match else "Recent"
 
         return {
             "degree": detected_degree,
             "major": detected_major,
+            "institution": institution,
             "gpa": gpa_str,
             "graduation_year": grad_year
         }
@@ -243,34 +479,35 @@ class ResumeParser:
     def _extract_projects(self, full_text: str, project_section: str) -> List[Dict[str, str]]:
         text_to_scan = project_section if project_section else full_text
         projects = []
-        
-        # Look for numbered or bulleted project titles
         lines = text_to_scan.split("\n")
         current_project = None
-        
+
         for line in lines:
             line_str = line.strip()
             if not line_str:
                 continue
-            # Check if line looks like a project header (e.g. "1. Project Name", "• Project Name", "Project:")
-            if re.match(r"^(?:\d+\.|\*|\-|\•)\s+([A-Za-z0-9\s\-\:]+)", line_str) or (line_str.isupper() and len(line_str) < 50):
+            if re.match(r"^(?:\d+\.|\*|\-|\•)\s+([A-Za-z0-9\s\-\:\/]+)", line_str) or (line_str.isupper() and 5 < len(line_str) < 60):
                 if current_project:
                     projects.append(current_project)
                 title = re.sub(r"^(?:\d+\.|\*|\-|\•)\s*", "", line_str)
                 current_project = {"title": title, "description": ""}
             elif current_project:
                 current_project["description"] += " " + line_str
-                
+
         if current_project:
             projects.append(current_project)
-            
-        return projects[:5]
+
+        return projects[:6]
 
     def _extract_certifications(self, full_text: str, cert_section: str) -> List[str]:
         text_to_scan = cert_section if cert_section else full_text
         certs = []
         for line in text_to_scan.split("\n"):
             clean = line.strip().strip("-*•").strip()
-            if len(clean) > 5 and any(kw in clean.lower() for kw in ["certified", "certificate", "specialization", "course", "badge", "associate", "professional", "coursera", "udemy"]):
+            if len(clean) > 4 and any(kw in clean.lower() for kw in [
+                "certified", "certificate", "specialization", "course", "badge",
+                "associate", "professional", "coursera", "udemy", "aws certified",
+                "gcp", "azure", "kubernetes", "cisco", "oracle", "deep learning.ai"
+            ]):
                 certs.append(clean)
-        return certs[:6]
+        return certs[:8]
