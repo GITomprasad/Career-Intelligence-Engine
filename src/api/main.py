@@ -12,6 +12,7 @@ from src.nlp.parser import ResumeParser
 from src.models.matcher import JobMatcher
 from src.models.role_classifier import RoleClassifier
 from src.models.salary_predictor import SalaryPredictor
+from src.engine.ats_scorer import ATSScorer
 from src.engine.gap_analyzer import SkillGapAnalyzer
 from src.engine.roadmap_generator import RoadmapGenerator
 from src.engine.explainability import ExplainabilityEngine
@@ -25,13 +26,15 @@ from src.api.schemas import (
     GapAnalysisRequest,
     SalaryPredictRequest,
     SimulationRequest,
-    RoadmapRequest
+    RoadmapRequest,
+    ATSScoreRequest,
+    ATSResultSchema
 )
 
 app = FastAPI(
     title="Career Intelligence Engine API",
     description="AI-Powered Career Recommendation, Skill Gap Analysis, Salary Prediction & Job Matching API",
-    version="1.0.0",
+    version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
@@ -47,6 +50,7 @@ app.add_middleware(
 
 # Initialize engines
 parser = ResumeParser()
+ats_scorer = ATSScorer()
 matcher = JobMatcher()
 role_classifier = RoleClassifier()
 salary_predictor = SalaryPredictor()
@@ -56,6 +60,7 @@ explainability_engine = ExplainabilityEngine()
 simulator = CareerSimulator()
 market_analyzer = MarketAnalyzer()
 pdf_generator = CareerReportGenerator()
+
 
 
 @app.get("/api/health", tags=["System"])
@@ -193,6 +198,20 @@ def get_market_trends(role_id: Optional[str] = Query(None, description="Optional
     }
 
 
+@app.post("/api/ats/score", tags=["ATS Scoring"], response_model=ATSResultSchema)
+def score_ats_compatibility(req: ATSScoreRequest):
+    """
+    Score resume ATS compatibility against target role, returning sub-scores, pass rate forecast, and actionable issues/wins.
+    """
+    profile_dict = req.profile.model_dump()
+    result = ats_scorer.score(
+        profile=profile_dict,
+        target_role_id=req.target_role_id,
+        raw_text=req.raw_text or profile_dict.get("raw_text", "")
+    )
+    return result
+
+
 @app.post("/api/report/download", tags=["PDF Reporting"])
 def download_pdf_report(
     profile: CandidateProfileSchema,
@@ -225,3 +244,4 @@ def download_pdf_report(
         media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename=Career_Report_{profile.name.replace(' ', '_')}.pdf"}
     )
+

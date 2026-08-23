@@ -30,6 +30,28 @@ WEIGHT_NLP_SIMILARITY = 0.25
 WEIGHT_EXPERIENCE = 0.15
 WEIGHT_EDUCATION = 0.10
 
+# ATS Scorer Weights
+WEIGHT_ATS_KEYWORDS = 0.40
+WEIGHT_ATS_FORMAT = 0.30
+WEIGHT_ATS_EXPERIENCE = 0.30
+
+# v2 Visual Design Tokens (Warm off-white base & indigo accent)
+THEME_TOKENS = {
+    "base_bg": "#F8F7F5",
+    "surface": "#FFFFFF",
+    "border": "#E8E6E0",
+    "text_primary": "#1A1A18",
+    "text_secondary": "#6B7280",
+    "accent_indigo": "#4F46E5",
+    "accent_bg": "#EEF2FF",
+    "success": "#16A34A",
+    "success_bg": "#DCFCE7",
+    "warning": "#D97706",
+    "warning_bg": "#FEF3C7",
+    "danger": "#DC2626",
+    "danger_bg": "#FEE2E2",
+}
+
 # Color Mapping for UI Badges and Categories
 CATEGORY_COLORS = {
     "Analytics": "#2563EB",            # Blue
@@ -43,7 +65,8 @@ CATEGORY_COLORS = {
 }
 
 SKILL_LEVEL_COLORS = {
-    "Strong": "#10B981",              # Emerald Green
-    "Needs Improvement": "#F59E0B",    # Amber
-    "Missing": "#EF4444"               # Rose Red
+    "Strong": "#16A34A",              # Green
+    "Needs Improvement": "#D97706",    # Amber
+    "Missing": "#DC2626"               # Red
 }
+

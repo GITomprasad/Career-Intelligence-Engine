@@ -65,3 +65,35 @@ def test_api_market_trends(client):
     data = response.json()
     assert "top_demanded_skills" in data
     assert "salary_by_role" in data
+
+
+def test_api_ats_score(client):
+    payload = {
+        "profile": {
+            "name": "Alex Mercer",
+            "email": "alex.mercer@email.com",
+            "phone": "+91 9876543210",
+            "location": "Bangalore",
+            "linkedin": "linkedin.com/in/alexmercer",
+            "github": "github.com/alexmercer",
+            "skills": ["Python", "SQL", "Pandas", "Scikit-Learn"],
+            "skill_ids": ["python", "sql", "pandas", "scikit_learn"],
+            "experience_years": 2.5,
+            "seniority_level": "Junior Associate",
+            "education": {"degree": "Bachelor's Degree", "major": "Computer Science"}
+        },
+        "target_role_id": "data_scientist",
+        "raw_text": "Alex Mercer\nEmail: alex.mercer@email.com\nPhone: +91 9876543210\nSkills: Python, SQL, Pandas, Scikit-Learn\nExperience: 2.5 years of experience improving models by 15%."
+    }
+    response = client.post("/api/ats/score", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert "total" in data
+    assert "keyword" in data
+    assert "format" in data
+    assert "experience" in data
+    assert "verdict" in data
+    assert "issues" in data
+    assert "wins" in data
+    assert 0 <= data["total"] <= 100
+

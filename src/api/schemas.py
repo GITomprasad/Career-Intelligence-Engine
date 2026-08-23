@@ -64,3 +64,27 @@ class SimulationRequest(BaseModel):
 
 class RoadmapRequest(BaseModel):
     gap_analysis: Dict[str, Any]
+
+
+class ATSScoreRequest(BaseModel):
+    profile: CandidateProfileSchema
+    target_role_id: str = Field(..., description="Target role ID to evaluate ATS compatibility against")
+    raw_text: Optional[str] = Field("", description="Raw resume text for depth and format checks")
+
+
+class ATSResultSchema(BaseModel):
+    total: int
+    keyword: float
+    format: float
+    experience: float
+    verdict: str
+    status_badge: str
+    status_color: str
+    ats_pass_rate_estimate: int
+    skills_detected_count: int
+    missing_keywords_count: int
+    issues: List[str]
+    wins: List[str]
+    target_role_title: str
+    target_role_id: str
+
