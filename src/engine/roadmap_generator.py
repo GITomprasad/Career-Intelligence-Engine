@@ -155,6 +155,106 @@ class RoadmapGenerator:
                 ],
                 "milestone_project": "Author a resilient DAG scheduled daily with custom operators, XComs, and Slack alerting.",
                 "interview_focus": "DAG scheduling, idempotency, backfilling, operators vs sensors, and task execution lifecycle."
+            },
+            "react": {
+                "category": "Frontend & Web",
+                "hours": 25,
+                "resources": [
+                    {"name": "React.dev Official Interactive Tutorial", "type": "Interactive", "url": "https://react.dev/"},
+                    {"name": "Next.js Full App Router Course", "type": "Docs", "url": "https://nextjs.org/learn"}
+                ],
+                "milestone_project": "Build an interactive, server-side rendered dashboard with state management and custom hooks.",
+                "interview_focus": "Virtual DOM, React reconciliation, useEffect dependency array, custom hooks, and server components."
+            },
+            "typescript": {
+                "category": "Frontend & Web",
+                "hours": 15,
+                "resources": [
+                    {"name": "TypeScript Handbook (Microsoft)", "type": "Docs", "url": "https://www.typescriptlang.org/docs/handbook/intro.html"},
+                    {"name": "Total TypeScript by Matt Pocock", "type": "Interactive", "url": "https://www.totaltypescript.com/"}
+                ],
+                "milestone_project": "Refactor a vanilla JS codebase into strict, type-safe generic interfaces and union types.",
+                "interview_focus": "Generics, utility types (Partial, Record), type narrowing, discrimination unions, and interface vs type."
+            },
+            "fastapi": {
+                "category": "Backend Engineering",
+                "hours": 15,
+                "resources": [
+                    {"name": "FastAPI Official Documentation", "type": "Docs", "url": "https://fastapi.tiangolo.com/"},
+                    {"name": "TestDriven.io FastAPI Guide", "type": "Tutorial", "url": "https://testdriven.io/"}
+                ],
+                "milestone_project": "Create an async REST API with Pydantic validation, dependency injection, and JWT auth.",
+                "interview_focus": "Async/await concurrency, Pydantic serialization, dependency injection, and background tasks."
+            },
+            "dbt": {
+                "category": "Data Engineering & Analytics",
+                "hours": 15,
+                "resources": [
+                    {"name": "dbt Learn Official Fundamentals", "type": "Course", "url": "https://learn.getdbt.com/"},
+                    {"name": "dbt Best Practices Guide", "type": "Docs", "url": "https://docs.getdbt.com/guides/best-practices"}
+                ],
+                "milestone_project": "Build a multi-layer staging and marts dimensional data model with automated testing.",
+                "interview_focus": "Modular SQL modeling, Jinja templating, schema testing, and incremental materializations."
+            },
+            "snowflake": {
+                "category": "Data Engineering & Analytics",
+                "hours": 15,
+                "resources": [
+                    {"name": "Snowflake Hands-on Essentials", "type": "Docs", "url": "https://quickstarts.snowflake.com/"},
+                    {"name": "Snowflake Architecture Deep Dive", "type": "Docs", "url": "https://docs.snowflake.com/"}
+                ],
+                "milestone_project": "Configure role-based access, virtual warehouse sizing, and zero-copy clones for analytics.",
+                "interview_focus": "Multi-cluster architecture, micro-partitions, time travel, and external stages."
+            },
+            "cybersecurity": {
+                "category": "Security & Infrastructure",
+                "hours": 30,
+                "resources": [
+                    {"name": "OWASP Top 10 Security Guide", "type": "Docs", "url": "https://owasp.org/www-project-top-ten/"},
+                    {"name": "TryHackMe Security Fundamentals", "type": "Interactive", "url": "https://tryhackme.com/"}
+                ],
+                "milestone_project": "Conduct an end-to-end vulnerability assessment and harden cloud infrastructure with IAM policies.",
+                "interview_focus": "Threat modeling, cryptography (symmetric vs asymmetric), PKI, zero trust architecture, and OWASP vulnerabilities."
+            },
+            "flutter": {
+                "category": "Mobile Development",
+                "hours": 25,
+                "resources": [
+                    {"name": "Flutter Official Getting Started", "type": "Docs", "url": "https://docs.flutter.dev/"},
+                    {"name": "Flutter & Dart Apprentice", "type": "Tutorial", "url": "https://flutter.dev/learn"}
+                ],
+                "milestone_project": "Develop a cross-platform mobile app with state management (Bloc/Provider) and offline local caching.",
+                "interview_focus": "Widget tree rendering, stateful vs stateless widgets, streams, and async isolates."
+            },
+            "qa_automation": {
+                "category": "Quality Assurance & SDET",
+                "hours": 20,
+                "resources": [
+                    {"name": "Playwright Official Automation Guide", "type": "Docs", "url": "https://playwright.dev/"},
+                    {"name": "Pytest Full Testing Framework Tutorial", "type": "Docs", "url": "https://docs.pytest.org/"}
+                ],
+                "milestone_project": "Implement an automated CI test suite covering unit, API integration, and headless browser E2E tests.",
+                "interview_focus": "Page Object Model (POM), fixture scopes, headless test parallelization, and mock fixtures."
+            },
+            "monitoring_observability": {
+                "category": "DevOps & SRE",
+                "hours": 20,
+                "resources": [
+                    {"name": "Prometheus & Grafana Official Labs", "type": "Docs", "url": "https://prometheus.io/docs/introduction/overview/"},
+                    {"name": "Google SRE Workbook: Monitoring Distributed Systems", "type": "Book", "url": "https://sre.google/sre-book/monitoring-distributed-systems/"}
+                ],
+                "milestone_project": "Set up a Prometheus metrics exporter with Grafana alerting dashboards for service SLO tracking.",
+                "interview_focus": "SLIs vs SLOs vs SLAs, Golden Signals (Latency, Traffic, Errors, Saturation), and alert routing."
+            },
+            "system_design": {
+                "category": "Architecture & Engineering",
+                "hours": 30,
+                "resources": [
+                    {"name": "System Design Primer by Donne Martin", "type": "Interactive", "url": "https://github.com/donnemartin/system-design-primer"},
+                    {"name": "Designing Data-Intensive Applications (Martin Kleppmann)", "type": "Book", "url": "https://dataintensive.net/"}
+                ],
+                "milestone_project": "Design a high-throughput, distributed rate-limiting and URL shortener architecture blueprint.",
+                "interview_focus": "CAP theorem, horizontal vs vertical scaling, load balancing, caching strategies (Write-Through/Write-Back), and database sharding."
             }
         }
 

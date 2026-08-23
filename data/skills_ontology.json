@@ -20,8 +20,9 @@
         {"id": "matlab", "name": "MATLAB", "aliases": ["matlab", "simulink"]},
         {"id": "ruby", "name": "Ruby", "aliases": ["ruby", "ruby on rails", "rails"]},
         {"id": "php", "name": "PHP", "aliases": ["php", "laravel"]},
-        {"id": "kotlin", "name": "Kotlin", "aliases": ["kotlin"]},
-        {"id": "swift", "name": "Swift", "aliases": ["swift", "ios development"]}
+        {"id": "kotlin", "name": "Kotlin", "aliases": ["kotlin", "android kotlin"]},
+        {"id": "swift", "name": "Swift", "aliases": ["swift", "ios development", "swiftui"]},
+        {"id": "dart", "name": "Dart", "aliases": ["dart", "flutter dart"]}
       ]
     },
     "data_science_ml": {
@@ -34,7 +35,7 @@
         {"id": "scikit_learn", "name": "Scikit-Learn", "aliases": ["scikit-learn", "sklearn", "scikit learn"]},
         {"id": "pytorch", "name": "PyTorch", "aliases": ["pytorch", "torch"]},
         {"id": "tensorflow", "name": "TensorFlow", "aliases": ["tensorflow", "tf", "keras"]},
-        {"id": "nlp", "name": "Natural Language Processing (NLP)", "aliases": ["nlp", "natural language processing", "text mining", "tokenization", "sentiment analysis", "spacy", "nltk", "transformers", "huggingface", "bert", "gpt"]},
+        {"id": "nlp", "name": "Natural Language Processing (NLP)", "aliases": ["nlp", "natural language processing", "text mining", "spacy", "nltk", "transformers", "huggingface", "bert", "gpt"]},
         {"id": "computer_vision", "name": "Computer Vision", "aliases": ["computer vision", "cv", "opencv", "object detection", "image segmentation", "yolo"]},
         {"id": "llms", "name": "Large Language Models & GenAI", "aliases": ["llm", "llms", "large language models", "generative ai", "genai", "prompt engineering", "langchain", "llamaindex", "rag", "retrieval augmented generation"]},
         {"id": "xgboost", "name": "XGBoost", "aliases": ["xgboost", "xgb", "lightgbm", "catboost", "gradient boosting"]},
@@ -65,8 +66,8 @@
         {"id": "etl_pipelines", "name": "ETL / Data Pipelines", "aliases": ["etl", "elt", "data pipeline", "data warehousing", "data modeling", "star schema", "data lake"]}
       ]
     },
-    "cloud_devops": {
-      "name": "Cloud Computing & DevOps",
+    "cloud_devops_security": {
+      "name": "Cloud, DevOps & Cybersecurity",
       "skills": [
         {"id": "aws", "name": "AWS (Amazon Web Services)", "aliases": ["aws", "amazon web services", "ec2", "s3", "aws lambda", "cloudformation", "dynamodb", "iam"]},
         {"id": "gcp", "name": "Google Cloud Platform (GCP)", "aliases": ["gcp", "google cloud", "google cloud platform", "vertex ai", "cloud run", "gcs"]},
@@ -76,7 +77,11 @@
         {"id": "ci_cd", "name": "CI/CD", "aliases": ["ci/cd", "continuous integration", "continuous deployment", "github actions", "gitlab ci", "jenkins"]},
         {"id": "terraform", "name": "Terraform", "aliases": ["terraform", "iac", "infrastructure as code"]},
         {"id": "linux", "name": "Linux / Unix Administration", "aliases": ["linux", "ubuntu", "centos", "debian", "redhat", "unix"]},
-        {"id": "git", "name": "Git & Version Control", "aliases": ["git", "github", "gitlab", "version control", "bitbucket"]}
+        {"id": "git", "name": "Git & Version Control", "aliases": ["git", "github", "gitlab", "version control", "bitbucket"]},
+        {"id": "cybersecurity", "name": "Cybersecurity Fundamentals", "aliases": ["cybersecurity", "infosec", "network security", "vulnerability assessment", "owasp", "encryption"]},
+        {"id": "penetration_testing", "name": "Penetration Testing & Ethical Hacking", "aliases": ["penetration testing", "ethical hacking", "pen test", "burp suite", "kali linux", "metasploit"]},
+        {"id": "siem", "name": "SIEM & SOC Operations", "aliases": ["siem", "soc", "splunk", "sentinel", "threat hunting", "incident response"]},
+        {"id": "monitoring_observability", "name": "Monitoring & Observability", "aliases": ["monitoring", "observability", "prometheus", "grafana", "datadog", "new relic", "alerting"]}
       ]
     },
     "bi_analytics_visualization": {
@@ -88,7 +93,8 @@
         {"id": "matplotlib_seaborn", "name": "Matplotlib / Seaborn", "aliases": ["matplotlib", "seaborn", "data visualization"]},
         {"id": "plotly", "name": "Plotly / Dash", "aliases": ["plotly", "dash", "altair", "bokeh", "interactive visualization"]},
         {"id": "looker", "name": "Looker / Looker Studio", "aliases": ["looker", "lookml", "google looker studio", "google data studio"]},
-        {"id": "business_intelligence", "name": "Business Intelligence & Reporting", "aliases": ["business intelligence", "bi", "dashboarding", "kpi tracking", "executive reporting"]}
+        {"id": "business_intelligence", "name": "Business Intelligence & Reporting", "aliases": ["business intelligence", "bi", "dashboarding", "kpi tracking", "executive reporting"]},
+        {"id": "product_analytics", "name": "Product Analytics & A/B Testing", "aliases": ["product analytics", "a/b testing", "experimentation", "mixpanel", "amplitude", "funnel analysis"]}
       ]
     },
     "software_engineering_web": {
@@ -98,10 +104,14 @@
         {"id": "flask", "name": "Flask", "aliases": ["flask"]},
         {"id": "django", "name": "Django", "aliases": ["django", "django rest framework", "drf"]},
         {"id": "react", "name": "React.js", "aliases": ["react", "react.js", "reactjs", "next.js", "nextjs"]},
-        {"id": "node_js", "name": "Node.js", "aliases": ["node.js", "nodejs", "express", "express.js"]},
+        {"id": "vue", "name": "Vue.js", "aliases": ["vue", "vue.js", "vuejs", "nuxt"]},
+        {"id": "angular", "name": "Angular", "aliases": ["angular", "angularjs"]},
+        {"id": "node_js", "name": "Node.js", "aliases": ["node.js", "nodejs", "express", "express.js", "nestjs"]},
         {"id": "rest_apis", "name": "RESTful APIs & Microservices", "aliases": ["rest api", "restful api", "microservices", "api design", "json", "graphql"]},
         {"id": "system_design", "name": "System Design & Architecture", "aliases": ["system design", "software architecture", "scalability", "distributed systems", "load balancing", "caching"]},
-        {"id": "data_structures_algorithms", "name": "Data Structures & Algorithms", "aliases": ["dsa", "data structures", "algorithms", "problem solving", "leetcode", "complexity analysis", "big-o"]}
+        {"id": "data_structures_algorithms", "name": "Data Structures & Algorithms", "aliases": ["dsa", "data structures", "algorithms", "problem solving", "leetcode", "complexity analysis", "big-o"]},
+        {"id": "flutter", "name": "Flutter & Mobile Frameworks", "aliases": ["flutter", "react native", "mobile app", "cross-platform mobile"]},
+        {"id": "qa_automation", "name": "QA Automation & Testing", "aliases": ["qa automation", "selenium", "cypress", "playwright", "pytest", "unit testing", "sdet", "test automation"]}
       ]
     },
     "soft_skills": {
@@ -132,7 +142,7 @@
       "category": "Data Science",
       "core_skills": ["python", "sql", "machine_learning", "statistics", "pandas", "numpy", "scikit_learn"],
       "recommended_skills": ["deep_learning", "nlp", "xgboost", "feature_engineering", "matplotlib_seaborn", "docker"],
-      "optional_skills": ["aws", "mlops", "llms", "pyspark", "tableau"],
+      "optional_skills": ["aws", "mlops", "llms", "apache_spark", "tableau"],
       "base_salary_min_lpa": 6.5,
       "base_salary_max_lpa": 16.0,
       "experience_multiplier": 1.75,
@@ -143,7 +153,7 @@
       "category": "Data Science & Engineering",
       "core_skills": ["python", "machine_learning", "deep_learning", "pytorch", "tensorflow", "mlops", "docker"],
       "recommended_skills": ["scikit_learn", "aws", "kubernetes", "rest_apis", "fastapi", "ci_cd", "system_design"],
-      "optional_skills": ["llms", "computer_vision", "nlp", "apache_spark", "cplusplus"],
+      "optional_skills": ["llms", "computer_vision", "nlp", "apache_spark", "cpp"],
       "base_salary_min_lpa": 8.0,
       "base_salary_max_lpa": 20.0,
       "experience_multiplier": 1.85,
@@ -171,6 +181,28 @@
       "experience_multiplier": 1.40,
       "description": "Transforms business data into strategic executive dashboards, reports, and predictive trend analyses."
     },
+    "analytics_engineer": {
+      "title": "Analytics Engineer",
+      "category": "Analytics & Engineering",
+      "core_skills": ["sql", "dbt", "snowflake", "bigquery", "etl_pipelines", "git", "data_structures_algorithms"],
+      "recommended_skills": ["python", "apache_airflow", "databricks", "looker", "business_intelligence"],
+      "optional_skills": ["power_bi", "tableau", "ci_cd"],
+      "base_salary_min_lpa": 6.5,
+      "base_salary_max_lpa": 16.5,
+      "experience_multiplier": 1.65,
+      "description": "Bridges the gap between data analytics and data engineering using dbt, SQL modeling, and modern data stack warehouses."
+    },
+    "product_analyst": {
+      "title": "Product & Growth Analyst",
+      "category": "Analytics",
+      "core_skills": ["sql", "python", "statistics", "product_analytics", "tableau", "business_intelligence"],
+      "recommended_skills": ["power_bi", "excel", "communication", "problem_solving", "collaboration"],
+      "optional_skills": ["dbt", "looker", "pandas"],
+      "base_salary_min_lpa": 5.5,
+      "base_salary_max_lpa": 14.0,
+      "experience_multiplier": 1.55,
+      "description": "Drives product experimentation, user funnel optimization, cohort retention, and A/B test analysis."
+    },
     "mlops_engineer": {
       "title": "MLOps Engineer",
       "category": "Engineering & DevOps",
@@ -193,60 +225,192 @@
       "experience_multiplier": 1.90,
       "description": "Develops conversational AI systems, RAG pipelines, LLM fine-tuning, and semantic search architectures."
     },
+    "genai_engineer": {
+      "title": "Generative AI & Agentic AI Specialist",
+      "category": "Data Science & AI",
+      "core_skills": ["python", "llms", "pytorch", "rest_apis", "fastapi", "docker", "nlp"],
+      "recommended_skills": ["redis", "elasticsearch", "aws", "git", "system_design"],
+      "optional_skills": ["mlops", "kubernetes", "typescript"],
+      "base_salary_min_lpa": 9.0,
+      "base_salary_max_lpa": 24.0,
+      "experience_multiplier": 1.95,
+      "description": "Architects multi-agent AI systems, custom vector embeddings, LLM orchestration, and enterprise RAG solutions."
+    },
+    "cv_engineer": {
+      "title": "Computer Vision Engineer",
+      "category": "Data Science",
+      "core_skills": ["python", "computer_vision", "deep_learning", "pytorch", "tensorflow", "cpp"],
+      "recommended_skills": ["scikit_learn", "docker", "rest_apis", "linux", "git"],
+      "optional_skills": ["mlops", "aws", "system_design"],
+      "base_salary_min_lpa": 8.0,
+      "base_salary_max_lpa": 20.5,
+      "experience_multiplier": 1.80,
+      "description": "Designs deep learning algorithms for video analysis, object detection, robotics, and image processing."
+    },
+    "ai_research_scientist": {
+      "title": "AI / Deep Learning Research Scientist",
+      "category": "Data Science & AI",
+      "core_skills": ["python", "deep_learning", "pytorch", "tensorflow", "statistics", "machine_learning"],
+      "recommended_skills": ["nlp", "computer_vision", "llms", "reinforcement_learning", "numpy"],
+      "optional_skills": ["cpp", "docker", "linux"],
+      "base_salary_min_lpa": 10.0,
+      "base_salary_max_lpa": 28.0,
+      "experience_multiplier": 2.00,
+      "description": "Pioneers novel deep learning architectures, foundational model pre-training, and mathematical optimization."
+    },
     "backend_developer": {
       "title": "Backend Software Engineer",
       "category": "Software Engineering",
       "core_skills": ["python", "rest_apis", "postgresql", "docker", "git", "data_structures_algorithms"],
       "recommended_skills": ["fastapi", "django", "redis", "system_design", "linux", "ci_cd"],
-      "optional_skills": ["aws", "kubernetes", "mongodb", "microservices"],
+      "optional_skills": ["aws", "kubernetes", "mongodb", "node_js"],
       "base_salary_min_lpa": 6.0,
       "base_salary_max_lpa": 15.5,
       "experience_multiplier": 1.60,
       "description": "Architects resilient server-side applications, database schemas, REST APIs, and microservices."
+    },
+    "frontend_developer": {
+      "title": "Frontend Engineer (React / Next.js)",
+      "category": "Software Engineering",
+      "core_skills": ["javascript", "typescript", "react", "git", "rest_apis", "data_structures_algorithms"],
+      "recommended_skills": ["vue", "angular", "ci_cd", "docker", "communication"],
+      "optional_skills": ["node_js", "graphql", "tailwind"],
+      "base_salary_min_lpa": 5.5,
+      "base_salary_max_lpa": 15.0,
+      "experience_multiplier": 1.55,
+      "description": "Builds performant, accessible web applications, responsive user interfaces, and state-managed frontends."
     },
     "full_stack_developer": {
       "title": "Full Stack Developer",
       "category": "Software Engineering",
       "core_skills": ["javascript", "react", "node_js", "python", "postgresql", "rest_apis", "git"],
       "recommended_skills": ["typescript", "docker", "fastapi", "mongodb", "ci_cd"],
-      "optional_skills": ["aws", "redis", "system_design", "tailwind"],
+      "optional_skills": ["aws", "redis", "system_design", "vue"],
       "base_salary_min_lpa": 5.5,
       "base_salary_max_lpa": 16.0,
       "experience_multiplier": 1.60,
       "description": "Builds end-to-end user interfaces, web applications, backend services, and database layers."
+    },
+    "mobile_developer": {
+      "title": "Mobile App Developer (iOS / Android / Flutter)",
+      "category": "Software Engineering",
+      "core_skills": ["flutter", "kotlin", "swift", "rest_apis", "git", "data_structures_algorithms"],
+      "recommended_skills": ["typescript", "react", "ci_cd", "firebase", "sqlite"],
+      "optional_skills": ["node_js", "docker", "system_design"],
+      "base_salary_min_lpa": 5.5,
+      "base_salary_max_lpa": 16.0,
+      "experience_multiplier": 1.60,
+      "description": "Develops native and cross-platform mobile experiences for iOS and Android with intuitive touch UX."
     },
     "cloud_architect": {
       "title": "Cloud / DevOps Architect",
       "category": "Cloud & Infrastructure",
       "core_skills": ["aws", "docker", "kubernetes", "terraform", "ci_cd", "linux", "system_design"],
       "recommended_skills": ["gcp", "azure", "python", "bash", "git"],
-      "optional_skills": ["prometheus", "grafana", "microservices"],
+      "optional_skills": ["monitoring_observability", "microservices"],
       "base_salary_min_lpa": 9.0,
       "base_salary_max_lpa": 24.0,
       "experience_multiplier": 1.95,
       "description": "Architects secure, scalable multi-cloud infrastructure, automation pipelines, and site reliability."
     },
+    "sre_engineer": {
+      "title": "Site Reliability Engineer (SRE)",
+      "category": "Cloud & Infrastructure",
+      "core_skills": ["linux", "kubernetes", "docker", "monitoring_observability", "ci_cd", "python", "bash"],
+      "recommended_skills": ["aws", "terraform", "system_design", "git", "redis"],
+      "optional_skills": ["gcp", "azure", "postgresql", "kafka"],
+      "base_salary_min_lpa": 7.5,
+      "base_salary_max_lpa": 19.5,
+      "experience_multiplier": 1.75,
+      "description": "Guarantees system uptime, high availability, automated incident recovery, and telemetry monitoring."
+    },
+    "cybersecurity_engineer": {
+      "title": "Cybersecurity & Security Operations Engineer",
+      "category": "Cloud & Infrastructure",
+      "core_skills": ["cybersecurity", "penetration_testing", "siem", "linux", "python", "bash", "git"],
+      "recommended_skills": ["aws", "docker", "ci_cd", "problem_solving", "communication"],
+      "optional_skills": ["kubernetes", "terraform", "network_security"],
+      "base_salary_min_lpa": 6.5,
+      "base_salary_max_lpa": 18.0,
+      "experience_multiplier": 1.75,
+      "description": "Protects digital assets, performs penetration testing, analyzes threat telemetry, and mitigates security vulnerabilities."
+    },
+    "devsecops_engineer": {
+      "title": "DevSecOps Engineer",
+      "category": "Cloud & Infrastructure",
+      "core_skills": ["cybersecurity", "ci_cd", "docker", "kubernetes", "terraform", "aws", "linux"],
+      "recommended_skills": ["python", "bash", "git", "monitoring_observability", "system_design"],
+      "optional_skills": ["azure", "gcp", "siem"],
+      "base_salary_min_lpa": 8.0,
+      "base_salary_max_lpa": 21.0,
+      "experience_multiplier": 1.85,
+      "description": "Embeds automated security scanning, compliance gates, and secret management into continuous delivery pipelines."
+    },
+    "sdet_qa_engineer": {
+      "title": "QA Automation & SDET Engineer",
+      "category": "Software Engineering",
+      "core_skills": ["qa_automation", "python", "javascript", "ci_cd", "git", "rest_apis"],
+      "recommended_skills": ["docker", "sql", "linux", "agile_scrum", "problem_solving"],
+      "optional_skills": ["java", "kubernetes", "performance_testing"],
+      "base_salary_min_lpa": 5.0,
+      "base_salary_max_lpa": 13.5,
+      "experience_multiplier": 1.50,
+      "description": "Authors automated test suites, end-to-end integration frameworks, and load testing harnesses."
+    },
+    "database_administrator": {
+      "title": "Database Administrator & Architect (DBA)",
+      "category": "Engineering",
+      "core_skills": ["sql", "postgresql", "mysql", "mongodb", "redis", "linux", "system_design"],
+      "recommended_skills": ["bash", "python", "aws", "docker", "monitoring_observability"],
+      "optional_skills": ["snowflake", "bigquery", "oracle"],
+      "base_salary_min_lpa": 6.0,
+      "base_salary_max_lpa": 15.5,
+      "experience_multiplier": 1.60,
+      "description": "Maintains database reliability, replication, query tuning, indexing optimization, and high availability clusters."
+    },
+    "quant_analyst": {
+      "title": "Quantitative Research Analyst",
+      "category": "Analytics & Finance",
+      "core_skills": ["python", "r", "statistics", "time_series", "machine_learning", "sql", "pandas"],
+      "recommended_skills": ["numpy", "scikit_learn", "cpp", "excel", "problem_solving"],
+      "optional_skills": ["deep_learning", "matlab", "financial_modeling"],
+      "base_salary_min_lpa": 9.0,
+      "base_salary_max_lpa": 26.0,
+      "experience_multiplier": 2.00,
+      "description": "Develops mathematical trading algorithms, risk models, statistical arbitrage strategies, and market backtests."
+    },
+    "big_data_architect": {
+      "title": "Big Data Solutions Architect",
+      "category": "Engineering",
+      "core_skills": ["apache_spark", "apache_kafka", "hadoop", "sql", "python", "aws", "system_design"],
+      "recommended_skills": ["snowflake", "databricks", "scala", "kubernetes", "docker"],
+      "optional_skills": ["gcp", "terraform", "dbt"],
+      "base_salary_min_lpa": 10.0,
+      "base_salary_max_lpa": 26.0,
+      "experience_multiplier": 1.95,
+      "description": "Architects petabyte-scale distributed data streaming, lakehouse architectures, and real-time event infrastructure."
+    },
+    "solutions_architect": {
+      "title": "Enterprise Solutions Architect",
+      "category": "Engineering & Strategy",
+      "core_skills": ["system_design", "aws", "rest_apis", "docker", "kubernetes", "leadership", "communication"],
+      "recommended_skills": ["python", "ci_cd", "azure", "gcp", "problem_solving", "agile_scrum"],
+      "optional_skills": ["terraform", "microservices", "security"],
+      "base_salary_min_lpa": 11.0,
+      "base_salary_max_lpa": 30.0,
+      "experience_multiplier": 2.00,
+      "description": "Designs holistic end-to-end technical system blueprints, tech stacks, and cloud migration strategies for enterprises."
+    },
     "ai_product_manager": {
       "title": "AI Product Manager",
       "category": "Product & Strategy",
       "core_skills": ["machine_learning", "business_intelligence", "agile_scrum", "communication", "leadership", "problem_solving"],
-      "recommended_skills": ["sql", "python", "llms", "statistics", "collaboration"],
+      "recommended_skills": ["sql", "python", "llms", "statistics", "collaboration", "product_analytics"],
       "optional_skills": ["tableau", "power_bi", "user_research"],
       "base_salary_min_lpa": 8.0,
       "base_salary_max_lpa": 22.0,
       "experience_multiplier": 1.70,
       "description": "Bridges machine learning technical teams and executive business strategy to build high-impact AI products."
-    },
-    "cv_engineer": {
-      "title": "Computer Vision Engineer",
-      "category": "Data Science",
-      "core_skills": ["python", "computer_vision", "deep_learning", "pytorch", "tensorflow", "cplusplus"],
-      "recommended_skills": ["scikit_learn", "docker", "rest_apis", "linux", "git"],
-      "optional_skills": ["mlops", "aws", "edge_computing", "ros"],
-      "base_salary_min_lpa": 8.0,
-      "base_salary_max_lpa": 20.5,
-      "experience_multiplier": 1.80,
-      "description": "Designs deep learning algorithms for video analysis, object detection, robotics, and image processing."
     }
   }
 }

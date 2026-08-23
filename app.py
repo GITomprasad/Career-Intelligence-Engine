@@ -5,7 +5,10 @@ Resume-First · ATS-First · Goal-Aware · UX-First
 """
 
 import json
+import logging
 import streamlit as st
+
+logger = logging.getLogger(__name__)
 
 from src.config import ONTOLOGY_PATH
 from src.nlp.parser import ResumeParser
@@ -80,42 +83,50 @@ if "candidate_profile" not in st.session_state:
 
 
 # Main Flow Orchestration
-if not st.session_state.onboarding_complete or not st.session_state.candidate_profile:
-    # STAGE 1: Drop zone landing only (no tabs, clean first impression)
-    render_landing_page(components)
-else:
-    # STAGES 2 - 4: Resume-First Intelligence Experience
-    profile = st.session_state.candidate_profile
-    target_role_id = st.session_state.target_role_id
-    raw_text = st.session_state.get("raw_text", "")
+try:
+    if not st.session_state.onboarding_complete or not st.session_state.candidate_profile:
+        # STAGE 1: Drop zone landing only (no tabs, clean first impression)
+        render_landing_page(components)
+    else:
+        # STAGES 2 - 4: Resume-First Intelligence Experience
+        profile = st.session_state.candidate_profile
+        target_role_id = st.session_state.target_role_id
+        raw_text = st.session_state.get("raw_text", "")
 
-    # Calculate ATS Scoring & Diagnostics
-    ats_scorer = components["ats_scorer"]
-    ats_results = ats_scorer.score(profile, target_role_id, raw_text=raw_text)
+        # Calculate ATS Scoring & Diagnostics
+        ats_scorer = components["ats_scorer"]
+        ats_results = ats_scorer.score(profile, target_role_id, raw_text=raw_text)
 
-    # 1. Persistent Summary Header & Inline Goal Selector
-    render_header(components, ats_results)
+        # 1. Persistent Summary Header & Inline Goal Selector
+        render_header(components, ats_results)
 
-    # 2. Five Focused Tabs
-    tab_ats, tab_jobs, tab_goal, tab_market, tab_report = st.tabs([
-        "🎯 ATS Score",
-        "💼 Job Matches",
-        "🎯 My Goal",
-        "📈 Market",
-        "📑 Report"
-    ])
+        # 2. Five Focused Tabs
+        tab_ats, tab_jobs, tab_goal, tab_market, tab_report = st.tabs([
+            "🎯 ATS Score",
+            "💼 Job Matches",
+            "🎯 My Goal",
+            "📈 Market",
+            "📑 Report"
+        ])
 
-    with tab_ats:
-        render_ats_view(components, ats_results)
+        with tab_ats:
+            render_ats_view(components, ats_results)
 
-    with tab_jobs:
-        render_jobs_view(components)
+        with tab_jobs:
+            render_jobs_view(components)
 
-    with tab_goal:
-        render_goal_view(components)
+        with tab_goal:
+            render_goal_view(components)
 
-    with tab_market:
-        render_market_view(components)
+        with tab_market:
+            render_market_view(components)
 
-    with tab_report:
-        render_report_view(components, ats_results)
+        with tab_report:
+            render_report_view(components, ats_results)
+
+except Exception as e:
+    logger.error(f"Application error in main orchestrator: {e}", exc_info=True)
+    st.error("The application encountered an unexpected issue while processing your request. Please click 'Reset' below to reload.")
+    if st.button("🔄 Reset Application", key="btn_global_reset"):
+        st.session_state.onboarding_complete = False
+        st.rerun()
