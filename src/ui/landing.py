@@ -45,21 +45,30 @@ def render_landing_page(components: dict):
             )
 
             if uploaded_file is not None:
-                try:
-                    bytes_data = uploaded_file.read()
-                    with st.spinner("Parsing resume structure and analyzing ATS compatibility..."):
-                        parse_result = parser.parse(bytes_data, filename=uploaded_file.name)
-                        if parse_result.get("success"):
-                            st.session_state.candidate_profile = parse_result["profile"]
-                            st.session_state.raw_text = parse_result["raw_text"]
-                            st.session_state.onboarding_complete = True
-                            st.session_state.uploaded_file_name = uploaded_file.name
-                            st.rerun()
-                        else:
-                            st.error(parse_result.get("error", "Failed to extract text from document. Please ensure the file is not password-protected."))
-                except Exception as e:
-                    logger.error(f"Error parsing uploaded resume: {e}", exc_info=True)
-                    st.error("An error occurred while parsing the resume. Please try uploading a plain text (.txt) or standard PDF file.")
+                bytes_data = uploaded_file.read()
+                with st.spinner("Extracting text from document..."):
+                    parse_result = parser.parse(bytes_data, filename=uploaded_file.name)
+
+                if not parse_result["success"]:
+                    st.error(parse_result.get("error", "Could not read this file."))
+                else:
+                    raw_text = parse_result.get("raw_text", "")
+                    validation = parser.validate_is_resume(raw_text)
+
+                    if not validation["is_resume"]:
+                        st.error(f"❌ Document rejected: {validation['reason']}")
+                        st.info(
+                            "**Accepted documents:** Resume / CV in PDF or TXT format only.\n\n"
+                            "Make sure your file contains sections like Work Experience, "
+                            "Skills, and Education."
+                        )
+                    else:
+                        st.session_state.candidate_profile = parse_result["profile"]
+                        st.session_state.raw_text = raw_text
+                        st.session_state.onboarding_complete = True
+                        st.session_state.uploaded_file_name = uploaded_file.name
+                        st.success(f"✅ Resume accepted: {uploaded_file.name}")
+                        st.rerun()
 
             # Section Divider for Sample Profiles
             st.markdown("""
