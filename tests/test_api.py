@@ -97,3 +97,23 @@ def test_api_ats_score(client):
     assert "wins" in data
     assert 0 <= data["total"] <= 100
 
+
+def test_api_resume_parse_file_success(client):
+    file_content = b"John Doe\nEmail: john.doe@email.com\nSkills: Python, SQL, Machine Learning\nExperience: 3 years building ML models."
+    files = {"file": ("resume.txt", file_content, "text/plain")}
+    response = client.post("/api/resume/parse-file", files=files)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert "python" in data["profile"]["skill_ids"]
+
+
+def test_api_resume_parse_file_size_exceeded(client):
+    # Simulate a file larger than 10MB (10.5 MB)
+    large_content = b"x" * (11 * 1024 * 1024)
+    files = {"file": ("large_resume.pdf", large_content, "application/pdf")}
+    response = client.post("/api/resume/parse-file", files=files)
+    assert response.status_code == 413
+    assert "exceeds" in response.json()["detail"].lower()
+
+

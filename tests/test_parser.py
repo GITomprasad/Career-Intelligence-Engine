@@ -144,3 +144,105 @@ def test_resume_parser_image_ocr(parser):
     assert profile["experience_years"] == 5.0
 
 
+def test_validate_is_resume_with_cbse_and_grades(parser):
+    """Ensure resumes with CBSE, ICSE, Class 10/12, and SGPA/CGPA are accepted and not rejected as marksheets."""
+    resume_text = """
+    Om Prakash Sahu
+    Email: omprakash.sahu@email.com | Phone: +91 9876543210 | Bangalore
+    LinkedIn: linkedin.com/in/omprakash-sahu | GitHub: github.com/opsahu
+
+    PROFESSIONAL SUMMARY
+    Data Analyst with 2 years of experience analyzing datasets and building interactive dashboards with Python, SQL, and Power BI.
+
+    EDUCATION
+    - B.Tech in Computer Science, VIT Vellore (2019 - 2023) - SGPA: 8.8 / 10
+    - Class XII (Senior Secondary), CBSE Board - 92.4%
+    - Class X (Secondary School Examination), CBSE Board - 95.0%
+
+    TECHNICAL SKILLS
+    - Languages: Python, SQL, C++
+    - Tools & Libraries: Pandas, NumPy, Scikit-Learn, Power BI, Tableau, Excel, Git
+
+    WORK EXPERIENCE
+    Data Analyst | Analytics Corp (2023 - Present)
+    - Developed automated ETL pipelines reducing manual reporting by 40%.
+    - Designed executive Power BI dashboards for 15+ KPIs.
+
+    PROJECTS
+    - Customer Churn Predictor: Built ML model with 88% accuracy using Scikit-Learn.
+    """
+    validation = parser.validate_is_resume(resume_text)
+    assert validation["is_resume"] is True
+    assert validation["confidence"] >= 0.70
+
+
+def test_validate_is_resume_with_certifications_and_billing(parser):
+    """Ensure resumes with certification sections and invoicing/finance project keywords are accepted."""
+    resume_text = """
+    Priya Sharma
+    Email: priya.sharma@example.com | Phone: +91 9123456789 | Hyderabad
+    GitHub: github.com/priyasharma
+
+    PROFESSIONAL EXPERIENCE
+    Senior Backend Engineer at FinTech Solutions (2021 - Present)
+    - Engineered tax invoice generation and automated GST/GSTIN reconciliation system handling 50k transactions daily.
+    - Integrated payment gateway and bank statement webhook listener.
+
+    SKILLS
+    Python, FastAPI, PostgreSQL, Docker, AWS, Redis, Git
+
+    CERTIFICATIONS
+    - AWS Certified Solutions Architect - Associate
+    - DeepLearning.AI Machine Learning Specialization Certificate
+
+    EDUCATION
+    Master of Technology in Computer Science, IIT Hyderabad (2019 - 2021)
+    """
+    validation = parser.validate_is_resume(resume_text)
+    assert validation["is_resume"] is True
+
+
+def test_validate_is_resume_rejects_standalone_marksheet(parser):
+    """Ensure a standalone marksheet transcript with no resume sections is rejected."""
+    marksheet_text = """
+    CENTRAL BOARD OF SECONDARY EDUCATION
+    STATEMENT OF MARKS / MARKS SHEET
+    SECONDARY SCHOOL EXAMINATION
+    ROLL NO: 1234567    NAME: CANDIDATE
+    SUB CODE   SUBJECT NAME      MAX MARKS   THEORY   PRACTICAL   TOTAL MARKS OBTAINED   POSITIONAL GRADE
+    041        MATHEMATICS       100         068      020         088                    A1
+    086        SCIENCE           100         065      020         085                    A2
+    CONTROLLER OF EXAMINATIONS
+    """
+    validation = parser.validate_is_resume(marksheet_text)
+    assert validation["is_resume"] is False
+    assert "marksheet" in validation["reason"].lower() or "transcript" in validation["reason"].lower()
+
+
+def test_validate_is_resume_rejects_standalone_certificate(parser):
+    """Ensure an individual course certificate with no resume structure is rejected."""
+    cert_text = """
+    CERTIFICATE OF COMPLETION
+    This is to certify that John Doe has successfully completed the course
+    Full Stack Web Development with 80 hours of instruction.
+    Certificate of Achievement awarded on October 12, 2023.
+    """
+    validation = parser.validate_is_resume(cert_text)
+    assert validation["is_resume"] is False
+
+
+def test_validate_is_resume_rejects_standalone_invoice(parser):
+    """Ensure a standalone financial invoice is rejected."""
+    invoice_text = """
+    TAX INVOICE
+    Invoice No: INV-2023-0094
+    Bill To: ACME Corporation
+    Ship To: ACME Warehouse
+    Total Amount Due: $1,450.00
+    Payment Due Date: 2023-11-30
+    Bank Account Statement Ref: 987654321
+    """
+    validation = parser.validate_is_resume(invoice_text)
+    assert validation["is_resume"] is False
+
+

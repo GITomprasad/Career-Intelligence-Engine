@@ -6,7 +6,7 @@ Provides accessible drag-and-drop uploader, visible sample candidate chips, and 
 import os
 import logging
 import streamlit as st
-from src.config import SAMPLE_RESUMES_DIR
+from src.config import SAMPLE_RESUMES_DIR, MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB
 
 logger = logging.getLogger(__name__)
 
@@ -36,39 +36,52 @@ def render_landing_page(components: dict):
 
     with col_center:
         with st.container():
-            # Universal Multi-Format Resume Uploader (Documents & Image OCR)
+            # Universal Single-File Resume Uploader (Max 10MB, Documents & Image OCR)
             uploaded_file = st.file_uploader(
-                "Drop your resume here (PDF, Word DOCX/DOC, Images JPG/PNG/WEBP, TXT, RTF, MD, JSON):",
+                "Drop your resume here (PDF, Word DOCX/DOC, Images JPG/PNG/WEBP, TXT, RTF, MD — Max 10MB):",
                 type=["pdf", "docx", "doc", "jpg", "jpeg", "png", "webp", "tiff", "bmp", "txt", "rtf", "md", "html", "htm", "json"],
+                accept_multiple_files=False,
                 label_visibility="visible",
-                help="Upload your resume in any format — PDF, Microsoft Word, scanned/photo images (JPG/PNG/WEBP via AI OCR), Plain Text, RTF, Markdown, or JSON."
+                help="Upload a single resume file (Max 10MB). Multiple files cannot be processed at a time. Supported formats: PDF, DOCX, DOC, scanned images (JPG/PNG/WEBP via AI OCR), Plain Text, RTF, Markdown, or JSON."
             )
 
             if uploaded_file is not None:
-                bytes_data = uploaded_file.read()
-                with st.spinner("Extracting text from document..."):
-                    parse_result = parser.parse(bytes_data, filename=uploaded_file.name)
-
-                if not parse_result["success"]:
-                    st.error(parse_result.get("error", "Could not read this file."))
+                file_size_bytes = getattr(uploaded_file, "size", None)
+                if file_size_bytes is None:
+                    bytes_data = uploaded_file.read()
+                    file_size_bytes = len(bytes_data)
                 else:
-                    raw_text = parse_result.get("raw_text", "")
-                    validation = parser.validate_is_resume(raw_text)
+                    bytes_data = uploaded_file.read()
 
-                    if not validation["is_resume"]:
-                        st.error(f"❌ Document rejected: {validation['reason']}")
-                        st.info(
-                            "**Accepted documents:** Resume / CV in PDF or TXT format only.\n\n"
-                            "Make sure your file contains sections like Work Experience, "
-                            "Skills, and Education."
-                        )
+                if file_size_bytes > MAX_FILE_SIZE_BYTES:
+                    st.error(
+                        f"❌ File size ({file_size_bytes / (1024 * 1024):.2f} MB) exceeds the maximum allowed limit of {MAX_FILE_SIZE_MB}MB. "
+                        f"Please upload a single file under {MAX_FILE_SIZE_MB}MB."
+                    )
+                else:
+                    with st.spinner("Extracting text from document..."):
+                        parse_result = parser.parse(bytes_data, filename=uploaded_file.name)
+
+                    if not parse_result["success"]:
+                        st.error(parse_result.get("error", "Could not read this file."))
                     else:
-                        st.session_state.candidate_profile = parse_result["profile"]
-                        st.session_state.raw_text = raw_text
-                        st.session_state.onboarding_complete = True
-                        st.session_state.uploaded_file_name = uploaded_file.name
-                        st.success(f"✅ Resume accepted: {uploaded_file.name}")
-                        st.rerun()
+                        raw_text = parse_result.get("raw_text", "")
+                        validation = parser.validate_is_resume(raw_text)
+
+                        if not validation["is_resume"]:
+                            st.error(f"❌ Document rejected: {validation['reason']}")
+                            st.info(
+                                "**Accepted documents:** Single Resume / CV (Max 10MB) in PDF, Word (DOCX/DOC), Image (JPG/PNG/WEBP), or Plain Text format.\n\n"
+                                "Make sure your file contains standard resume sections like Work Experience, Projects, "
+                                "Skills, and Education."
+                            )
+                        else:
+                            st.session_state.candidate_profile = parse_result["profile"]
+                            st.session_state.raw_text = raw_text
+                            st.session_state.onboarding_complete = True
+                            st.session_state.uploaded_file_name = uploaded_file.name
+                            st.success(f"✅ Resume accepted: {uploaded_file.name}")
+                            st.rerun()
 
             # Section Divider for Sample Profiles
             st.markdown("""

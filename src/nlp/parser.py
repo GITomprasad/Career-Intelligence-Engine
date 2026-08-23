@@ -521,7 +521,8 @@ class ResumeParser:
     def validate_is_resume(self, text: str) -> dict:
         """
         Checks whether extracted text looks like a genuine resume/CV.
-        Rejects marksheets, transcripts, certificates, invoices, official docs, and non-resume files.
+        Rejects standalone marksheets, transcripts, certificates, invoices, official docs, and non-resume files,
+        while ensuring resumes with education milestones (CBSE, ICSE, SGPA, grades) are accurately accepted.
         Returns {"is_resume": bool, "reason": str, "confidence": float}
         """
         import re
@@ -529,71 +530,73 @@ class ResumeParser:
         if not text or len(text.strip()) < 80:
             return {
                 "is_resume": False,
-                "reason": "The document is too short or contains no readable text. Please upload your resume in PDF or TXT format.",
+                "reason": "The document is too short or contains no readable text. Please upload your resume in PDF, Word DOCX, Image, or TXT format.",
                 "confidence": 0.0
             }
 
         text_lower = text.lower()
 
-        # Comprehensive marksheet / academic transcript keywords
+        # 1. Definitive Standalone Marksheet / Academic Transcript phrases
+        # Note: Non-discriminative terms (e.g. CBSE, ICSE, Class 10/12, SGPA, DOB) are excluded
+        # because legitimate resumes commonly list these education milestones.
         definitive_marksheet_phrases = [
-            "statement of marks", "marks statement", "marks card", "marks memo", "memo of marks",
-            "mark sheet", "marksheet", "grade sheet", "academic transcript", "transcript of records",
-            "class x", "class 10", "class xii", "class 12", "10th class", "10th standard",
-            "12th class", "12th standard", "matriculation", "secondary school examination",
-            "higher secondary", "high school examination", "board of secondary",
-            "board of intermediate", "cbse", "icse", "state board", "central board of secondary",
-            "sub code", "subject code", "positional grade", "maximum marks", "marks obtained",
-            "passing marks", "min marks", "max marks", "total marks", "theory", "practical",
-            "internal assessment", "controller of examinations", "board of examination",
-            "annual examination", "supplementary examination", "back paper", "re-appear",
-            "hall ticket", "admit card", "seat no", "roll no", "roll number", "mother's name",
-            "father's name", "date of birth", "dob", "division", "grade point", "sgpa"
+            "statement of marks", "marks statement", "marks memo", "memo of marks",
+            "mark sheet", "marksheet", "grade sheet", "grade card", "tabulation sheet",
+            "transcript of records", "academic transcript", "consolidated marks memo",
+            "controller of examinations", "board of examination", "board of examinations",
+            "total marks obtained", "maximum marks", "minimum marks", "marks obtained",
+            "internal assessment marks", "theory marks", "practical marks",
+            "hall ticket no", "admit card no", "sub code", "subject code"
         ]
 
         certificate_keywords = [
-            "this is to certify", "hereby certify", "certificate of",
-            "awarded to", "this certificate", "in recognition of",
-            "has successfully completed", "course completion",
-            "participation certificate", "certificate of participation",
-            "date of issue", "valid till", "seal of"
-        ]
-        financial_keywords = [
-            "invoice", "bill no", "gst", "gstin", "total amount", "tax invoice",
-            "amount due", "payment due", "subtotal", "grand total",
-            "bank statement", "account number", "ifsc"
-        ]
-        official_doc_keywords = [
-            "government of india", "ministry of", "department of",
-            "aadhaar", "pan card", "voter id", "passport number",
-            "driving license", "application number", "enrollment number"
+            "this is to certify that", "hereby certify that", "certificate of completion",
+            "certificate of participation", "certificate of achievement", "certificate of excellence",
+            "this certificate is awarded to", "has successfully completed the course",
+            "in recognition of active participation", "provisional certificate"
         ]
 
-        # Stricter Resume Section Headers (multi-word / explicit sections to prevent false substring matches)
+        financial_keywords = [
+            "tax invoice", "invoice no", "bill to:", "ship to:", "total amount due",
+            "payment due date", "bank account statement", "remittance advice"
+        ]
+
+        official_doc_keywords = [
+            "unique identification authority of india", "income tax department",
+            "election commission of india", "driving licence", "driving license",
+            "passport no", "aadhaar number"
+        ]
+
+        # 2. Positive Resume Section Headers
         resume_section_headers = [
             "work experience", "professional experience", "employment history", "work history",
-            "technical skills", "core competencies", "skills & competencies", "key skills",
-            "projects", "personal projects", "key projects", "academic projects",
-            "certifications", "licenses & certifications", "career summary", "professional summary",
-            "education", "educational qualification", "academic background",
-            "achievements", "publications", "volunteer experience", "internship experience"
+            "technical skills", "core competencies", "skills & competencies", "key skills", "skills",
+            "projects", "personal projects", "key projects", "academic projects", "technical projects",
+            "certifications", "licenses & certifications", "career summary", "professional summary", "summary",
+            "education", "educational qualification", "academic background", "academics",
+            "achievements", "publications", "volunteer experience", "internship experience", "internships"
         ]
 
-        # Valid contact patterns (Email, LinkedIn, GitHub, formatted phone number)
+        # Valid contact patterns (Email, LinkedIn, GitHub, formatted phone number, portfolio)
         contact_patterns = [
             r"[\w\.-]+@[\w\.-]+\.[a-zA-Z]{2,}",
             r"linkedin\.com/in/",
             r"github\.com/",
-            r"(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}|\+91[-.\s]?[6-9]\d{9}"
+            r"(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}|\+91[-.\s]?[6-9]\d{9}|\b[6-9]\d{9}\b",
+            r"(?:https?://)?(?:www\.)?[a-zA-Z0-9_\-\.]+\.(?:dev|io|me|app|ai|tech)"
         ]
 
         career_keywords = [
             "bachelor", "master", "b.tech", "b.e.", "m.tech", "m.s.", "m.sc", "b.sc", "bca", "mca", "mba", "ph.d",
-            "software engineer", "developer", "data scientist", "data analyst", "ml engineer", "intern",
+            "software engineer", "developer", "data scientist", "data analyst", "ml engineer", "intern", "consultant",
             "responsible for", "developed", "designed", "managed", "implemented", "built", "created", "collaborated",
-            "python", "java", "sql", "machine learning", "pytorch", "tensorflow", "react", "node.js",
-            "university", "institute of technology"
+            "spearheaded", "engineered", "optimized", "python", "java", "sql", "machine learning", "pytorch",
+            "tensorflow", "react", "node.js", "aws", "docker", "kubernetes", "git"
         ]
+
+        # Extract skills count as strong domain signal
+        skills_info = self.skill_extractor.extract_skills(text)
+        extracted_skills_count = skills_info.get("total_count", 0)
 
         # Check negative signals
         marksheet_hits = [k for k in definitive_marksheet_phrases if k in text_lower]
@@ -601,56 +604,71 @@ class ResumeParser:
         fin_hits = [k for k in financial_keywords if k in text_lower]
         off_hits = [k for k in official_doc_keywords if k in text_lower]
 
-        non_resume_score = (len(marksheet_hits) * 30) + (len(cert_hits) * 25) + (len(fin_hits) * 30) + (len(off_hits) * 30)
-
         # Check positive signals
         matched_headers = sum(1 for h in resume_section_headers if h in text_lower)
         matched_contacts = sum(1 for p in contact_patterns if re.search(p, text_lower))
         matched_career = sum(1 for k in career_keywords if k in text_lower)
 
-        resume_score = (min(matched_headers * 20, 50) +
-                        min(matched_contacts * 15, 30) +
-                        min(matched_career * 5, 30))
+        # Compute positive resume score
+        header_score = min(matched_headers * 15, 45)
+        contact_score = min(matched_contacts * 15, 30)
+        career_score = min(max(extracted_skills_count * 4, matched_career * 3), 35)
+        resume_score = header_score + contact_score + career_score
+
+        has_strong_resume_structure = (
+            (matched_headers >= 2 and (matched_contacts >= 1 or extracted_skills_count >= 1 or matched_career >= 2)) or
+            (matched_headers >= 1 and matched_contacts >= 1 and (extracted_skills_count >= 2 or matched_career >= 3)) or
+            (resume_score >= 45 and matched_contacts >= 1)
+        )
+
+        non_resume_score = 0
+        rejection_reason = ""
+
+        # Only evaluate non-resume documents if the text lacks strong resume structure
+        if not has_strong_resume_structure:
+            if len(marksheet_hits) >= 2 or (len(marksheet_hits) == 1 and matched_headers == 0 and matched_contacts == 0):
+                non_resume_score += len(marksheet_hits) * 35
+                rejection_reason = (
+                    "This document appears to be a standalone marksheet or academic transcript, not a complete resume. "
+                    "Please upload your resume/CV containing your experience, skills, and summary."
+                )
+            elif len(cert_hits) >= 1 and matched_headers < 2 and extracted_skills_count < 2:
+                non_resume_score += len(cert_hits) * 35
+                rejection_reason = (
+                    "This document looks like an individual course certificate or completion letter. "
+                    "Please upload your full resume/CV instead."
+                )
+            elif (len(fin_hits) + len(off_hits)) >= 1 and resume_score < 30:
+                non_resume_score += 40
+                rejection_reason = (
+                    "This looks like an invoice, bill, or government ID document, not a resume. "
+                    "Please upload your resume/CV."
+                )
+            elif resume_score < 25 or (matched_headers < 1 and matched_contacts == 0):
+                rejection_reason = (
+                    "This document doesn't appear to be a resume. "
+                    "No resume sections (Experience, Skills, Education) or contact information were detected. "
+                    "Please upload your CV or resume in PDF, Word DOCX, Image, or TXT format."
+                )
 
         total = resume_score + non_resume_score
-        confidence = resume_score / total if total > 0 else 0.0
+        confidence = resume_score / total if total > 0 else (0.90 if has_strong_resume_structure else 0.0)
 
-        # Decision & rejection reason
-        rejection_reason = ""
-        if len(marksheet_hits) >= 2:
-            rejection_reason = (
-                "This looks like a marksheet or academic transcript, not a resume. "
-                "Please upload your resume/CV instead. "
-                f"(Detected: {', '.join(marksheet_hits[:3])})"
-            )
-        elif len(cert_hits) >= 2:
-            rejection_reason = (
-                "This looks like a certificate or completion letter, not a resume. "
-                "Please upload your resume/CV instead."
-            )
-        elif (len(fin_hits) + len(off_hits)) >= 2:
-            rejection_reason = (
-                "This looks like a financial, official, or government document, not a resume. "
-                "Please upload your resume/CV instead."
-            )
-        elif resume_score < 25 or matched_headers < 1:
-            rejection_reason = (
-                "This document doesn't appear to be a resume. "
-                "No resume sections (Experience, Skills, Education) were detected. "
-                "Please upload your CV or resume in PDF or TXT format."
-            )
-
-        is_resume = not bool(rejection_reason) and confidence >= 0.50 and resume_score >= 25 and non_resume_score < 50
+        is_resume = not bool(rejection_reason) and (has_strong_resume_structure or (resume_score >= 25 and non_resume_score == 0))
 
         return {
             "is_resume": is_resume,
             "reason": rejection_reason if not is_resume else "Resume detected successfully.",
-            "confidence": round(confidence, 2),
+            "confidence": round(min(confidence, 1.0), 2),
             "debug": {
                 "resume_score": resume_score,
                 "non_resume_score": non_resume_score,
                 "matched_headers": matched_headers,
+                "matched_contacts": matched_contacts,
+                "extracted_skills_count": extracted_skills_count,
+                "has_strong_resume_structure": has_strong_resume_structure,
                 "marksheet_hits": marksheet_hits,
             }
         }
+
 

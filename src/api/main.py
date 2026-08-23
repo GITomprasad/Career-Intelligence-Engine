@@ -8,6 +8,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from src.config import MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB
 from src.nlp.parser import ResumeParser
 from src.models.matcher import JobMatcher
 from src.models.role_classifier import RoleClassifier
@@ -76,12 +77,17 @@ def health_check():
 @app.post("/api/resume/parse-file", tags=["Resume NLP"])
 async def parse_resume_file(file: UploadFile = File(...)):
     """
-    Upload and parse a PDF or TXT resume file.
+    Upload and parse a single PDF, Word DOCX, Image, or TXT resume file (Max 10MB).
     """
     contents = await file.read()
     if not contents:
         raise HTTPException(status_code=400, detail="Uploaded file is empty.")
-        
+    if len(contents) > MAX_FILE_SIZE_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail=f"File size ({len(contents) / (1024 * 1024):.2f} MB) exceeds maximum allowed limit of {MAX_FILE_SIZE_MB}MB."
+        )
+
     result = parser.parse(contents, filename=file.filename)
     if not result.get("success"):
         raise HTTPException(status_code=422, detail=result.get("error", "Failed to parse resume."))

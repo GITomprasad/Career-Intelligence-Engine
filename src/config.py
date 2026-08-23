@@ -24,6 +24,10 @@ TFIDF_MATCHER_PATH = MODELS_DIR / "tfidf_matcher.pkl"
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
 PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
+# Upload & File Limits
+MAX_FILE_SIZE_MB = 10
+MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+
 # Matching Weights
 WEIGHT_SKILLS = 0.50
 WEIGHT_NLP_SIMILARITY = 0.25
