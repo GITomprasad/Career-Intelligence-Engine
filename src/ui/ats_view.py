@@ -1,6 +1,7 @@
 """
 Stage 2 View: Instant ATS Score — The Hero Screen.
 Renders the circular SVG score ring, sub-scores progress bars, metric cards, and 2-column Issues & Wins.
+Fully adapted for both Dark Mode and Light Mode with native bordered containers.
 """
 
 import logging
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 def render_ats_view(components: dict, ats_results: dict):
     """
-    Renders the hero ATS score evaluation screen with high-contrast visuals and error handling.
+    Renders the hero ATS score evaluation screen with clean containers and high-contrast visuals.
     """
     try:
         total_score = ats_results.get("total", 0)
@@ -26,19 +27,19 @@ def render_ats_view(components: dict, ats_results: dict):
         issues = ats_results.get("issues", [])
         wins = ats_results.get("wins", [])
 
-        # Color band selection
+        # Dynamic high-contrast color tokens
         if total_score >= 71:
-            ring_color = "#16A34A"  # Green
-            bg_ring_color = "#DCFCE7"
-            badge_text_color = "#14532D"
+            ring_color = "var(--color-success)"
+            bg_badge_var = "var(--color-success-bg)"
+            text_badge_var = "var(--color-success-text)"
         elif total_score >= 41:
-            ring_color = "#D97706"  # Amber
-            bg_ring_color = "#FEF3C7"
-            badge_text_color = "#78350F"
+            ring_color = "var(--color-warning)"
+            bg_badge_var = "var(--color-warning-bg)"
+            text_badge_var = "var(--color-warning-text)"
         else:
-            ring_color = "#DC2626"  # Red
-            bg_ring_color = "#FEE2E2"
-            badge_text_color = "#7F1D1D"
+            ring_color = "var(--color-danger)"
+            bg_badge_var = "var(--color-danger-bg)"
+            text_badge_var = "var(--color-danger-text)"
 
         # SVG Ring Calculations (radius 70, circumference ~439.82)
         radius = 70
@@ -51,7 +52,7 @@ def render_ats_view(components: dict, ats_results: dict):
         with col_hero_ring:
             st.markdown(f"""
             <div class="hero-score-card">
-                <div style="font-size: 0.88rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); margin-bottom: 8px;">
+                <div style="font-size: 0.88rem; font-weight: 850; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); margin-bottom: 8px;">
                     ATS Screening Score
                 </div>
                 <div style="position: relative; width: 170px; height: 170px; display: flex; align-items: center; justify-content: center; margin: 4px 0 12px 0;">
@@ -62,8 +63,9 @@ def render_ats_view(components: dict, ats_results: dict):
                             cy="85"
                             r="{radius}"
                             fill="none"
-                            stroke="{bg_ring_color}"
+                            stroke="var(--border-color)"
                             stroke-width="13"
+                            opacity="0.35"
                         />
                         <!-- Progress Arc -->
                         <circle
@@ -80,7 +82,7 @@ def render_ats_view(components: dict, ats_results: dict):
                         />
                     </svg>
                     <div style="position: absolute; text-align: center;">
-                        <div style="font-size: 2.6rem; font-weight: 850; color: {ring_color}; line-height: 1;">
+                        <div style="font-size: 2.6rem; font-weight: 900; color: {ring_color}; line-height: 1;">
                             {total_score}
                         </div>
                         <div style="font-size: 0.82rem; font-weight: 750; color: var(--text-secondary); margin-top: 2px;">
@@ -88,7 +90,7 @@ def render_ats_view(components: dict, ats_results: dict):
                         </div>
                     </div>
                 </div>
-                <div style="font-size: 0.88rem; font-weight: 700; color: {badge_text_color}; background: {bg_ring_color}; padding: 6px 14px; border-radius: 999px; max-width: 92%; line-height: 1.3;">
+                <div style="font-size: 0.88rem; font-weight: 750; color: {text_badge_var}; background: {bg_badge_var}; padding: 6px 16px; border-radius: 999px; max-width: 92%; line-height: 1.3; border: 1px solid {ring_color};">
                     ● {verdict}
                 </div>
                 <div style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-top: 8px;">
@@ -98,55 +100,53 @@ def render_ats_view(components: dict, ats_results: dict):
             """, unsafe_allow_html=True)
 
         with col_subscores:
-            st.markdown('<div class="cie-card" style="height: 100%;">', unsafe_allow_html=True)
-            st.markdown('<h4 style="margin-top: 0; margin-bottom: 16px; font-weight: 750; color: var(--text-primary);">Score Breakdown & Metrics</h4>', unsafe_allow_html=True)
+            with st.container(border=True):
+                st.markdown('<h4 style="margin-top: 0; margin-bottom: 16px; font-weight: 800; color: var(--text-primary);">Score Breakdown & Metrics</h4>', unsafe_allow_html=True)
 
-            # Sub-score progress bars
-            # 1. Keyword Match
-            st.markdown(f"""
-            <div class="subscore-row">
-                <div class="subscore-header">
-                    <span>🔑 Keyword Match (Core & Recommended Skills)</span>
-                    <span style="color: var(--accent-indigo);">{int(keyword_score)}%</span>
+                # Sub-score progress bars
+                # 1. Keyword Match
+                st.markdown(f"""
+                <div class="subscore-row">
+                    <div class="subscore-header">
+                        <span style="color: var(--text-primary);">🔑 Keyword Match (Core & Recommended Skills)</span>
+                        <span style="color: var(--accent-indigo); font-weight: 800;">{int(keyword_score)}%</span>
+                    </div>
                 </div>
-            </div>
-            """, unsafe_allow_html=True)
-            st.progress(min(1.0, keyword_score / 100.0))
+                """, unsafe_allow_html=True)
+                st.progress(min(1.0, keyword_score / 100.0))
 
-            # 2. Format & Readability
-            st.markdown(f"""
-            <div class="subscore-row" style="margin-top: 10px;">
-                <div class="subscore-header">
-                    <span>📐 Format Quality & Readability</span>
-                    <span style="color: var(--accent-indigo);">{int(format_score)}%</span>
+                # 2. Format & Readability
+                st.markdown(f"""
+                <div class="subscore-row" style="margin-top: 10px;">
+                    <div class="subscore-header">
+                        <span style="color: var(--text-primary);">📐 Format Quality & Readability</span>
+                        <span style="color: var(--accent-indigo); font-weight: 800;">{int(format_score)}%</span>
+                    </div>
                 </div>
-            </div>
-            """, unsafe_allow_html=True)
-            st.progress(min(1.0, format_score / 100.0))
+                """, unsafe_allow_html=True)
+                st.progress(min(1.0, format_score / 100.0))
 
-            # 3. Experience Depth
-            st.markdown(f"""
-            <div class="subscore-row" style="margin-top: 10px;">
-                <div class="subscore-header">
-                    <span>⏳ Experience Depth & Seniority Fit</span>
-                    <span style="color: var(--accent-indigo);">{int(exp_score)}%</span>
+                # 3. Experience Depth
+                st.markdown(f"""
+                <div class="subscore-row" style="margin-top: 10px;">
+                    <div class="subscore-header">
+                        <span style="color: var(--text-primary);">⏳ Experience Depth & Seniority Fit</span>
+                        <span style="color: var(--accent-indigo); font-weight: 800;">{int(exp_score)}%</span>
+                    </div>
                 </div>
-            </div>
-            """, unsafe_allow_html=True)
-            st.progress(min(1.0, exp_score / 100.0))
+                """, unsafe_allow_html=True)
+                st.progress(min(1.0, exp_score / 100.0))
 
-            st.markdown("<hr style='margin: 16px 0; border: none; border-top: 1px solid var(--border-color);'>", unsafe_allow_html=True)
+                st.markdown("<hr style='margin: 16px 0; border: none; border-top: 1px solid var(--border-color);'>", unsafe_allow_html=True)
 
-            # 3 Native Metric Cards in a row
-            m1, m2, m3 = st.columns(3)
-            with m1:
-                st.metric(label="Skills Detected", value=f"{skills_count}")
-            with m2:
-                st.metric(label="Missing Keywords", value=f"{missing_count}")
-            with m3:
-                st.metric(label="Estimated Pass Rate", value=f"{pass_rate}%")
-
-            st.markdown('</div>', unsafe_allow_html=True)
+                # 3 Native Metric Cards in a row
+                m1, m2, m3 = st.columns(3)
+                with m1:
+                    st.metric(label="Skills Detected", value=f"{skills_count}")
+                with m2:
+                    st.metric(label="Missing Keywords", value=f"{missing_count}")
+                with m3:
+                    st.metric(label="Estimated Pass Rate", value=f"{pass_rate}%")
 
         st.markdown("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
 
@@ -154,48 +154,44 @@ def render_ats_view(components: dict, ats_results: dict):
         col_wins, col_issues = st.columns(2)
 
         with col_wins:
-            st.markdown("""
-            <div class="cie-card">
+            with st.container(border=True):
+                st.markdown("""
                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
-                    <span style="background: var(--color-success-bg); color: var(--color-success-text); padding: 4px 10px; border-radius: 6px; font-weight: 800;">✓</span>
-                    <span style="font-size: 1.05rem; font-weight: 750; color: var(--color-success-text);">What's Working (Strengths)</span>
+                    <span style="background: var(--color-success-bg); color: var(--color-success-text); padding: 4px 10px; border-radius: 6px; font-weight: 850;">✓</span>
+                    <span style="font-size: 1.05rem; font-weight: 800; color: var(--color-success-text);">What's Working (Strengths)</span>
                 </div>
-            """, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
 
-            if wins:
-                for win in wins:
-                    st.markdown(f"""
-                    <div class="win-card">
-                        <span style="font-weight: 800;">✓</span>
-                        <span>{win}</span>
-                    </div>
-                    """, unsafe_allow_html=True)
-            else:
-                st.info("Upload your resume to evaluate strong factors.")
-
-            st.markdown('</div>', unsafe_allow_html=True)
+                if wins:
+                    for win in wins:
+                        st.markdown(f"""
+                        <div class="win-card">
+                            <span style="font-weight: 850;">✓</span>
+                            <span>{win}</span>
+                        </div>
+                        """, unsafe_allow_html=True)
+                else:
+                    st.info("Upload your resume to evaluate strong factors.")
 
         with col_issues:
-            st.markdown("""
-            <div class="cie-card">
+            with st.container(border=True):
+                st.markdown("""
                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
-                    <span style="background: var(--color-danger-bg); color: var(--color-danger-text); padding: 4px 10px; border-radius: 6px; font-weight: 800;">!</span>
-                    <span style="font-size: 1.05rem; font-weight: 750; color: var(--color-danger-text);">What to Fix (Actionable Fixes)</span>
+                    <span style="background: var(--color-danger-bg); color: var(--color-danger-text); padding: 4px 10px; border-radius: 6px; font-weight: 850;">!</span>
+                    <span style="font-size: 1.05rem; font-weight: 800; color: var(--color-danger-text);">What to Fix (Actionable Fixes)</span>
                 </div>
-            """, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
 
-            if issues:
-                for issue in issues:
-                    st.markdown(f"""
-                    <div class="issue-card">
-                        <span style="font-weight: 800;">•</span>
-                        <span>{issue}</span>
-                    </div>
-                    """, unsafe_allow_html=True)
-            else:
-                st.success("No critical issues detected! Your resume aligns cleanly with ATS guidelines.")
-
-            st.markdown('</div>', unsafe_allow_html=True)
+                if issues:
+                    for issue in issues:
+                        st.markdown(f"""
+                        <div class="issue-card">
+                            <span style="font-weight: 850;">•</span>
+                            <span>{issue}</span>
+                        </div>
+                        """, unsafe_allow_html=True)
+                else:
+                    st.success("No critical issues detected! Your resume aligns cleanly with ATS guidelines.")
 
     except Exception as e:
         logger.error(f"Unexpected error in ATS View: {e}", exc_info=True)
