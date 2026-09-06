@@ -2,7 +2,6 @@
 Configuration and constants for the Career Intelligence Engine.
 """
 
-import os
 from pathlib import Path
 
 # Paths
