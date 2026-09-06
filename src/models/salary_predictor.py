@@ -4,7 +4,7 @@ Predicts market compensation ranges in LPA (Lakhs Per Annum) based on multi-fact
 """
 
 import json
-import joblib
+import skops.io as sio
 import numpy as np
 import pandas as pd
 from typing import Dict, Any, Optional
@@ -28,7 +28,7 @@ class SalaryPredictor:
             self.roles_metadata = data.get("roles", {})
 
         try:
-            self.artifact = joblib.load(self.model_path)
+            self.artifact = sio.load(self.model_path)
             self.model = self.artifact["model"]
             self.ohe = self.artifact["one_hot_encoder"]
             self.scaler = self.artifact["scaler"]

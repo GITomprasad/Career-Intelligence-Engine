@@ -3,7 +3,7 @@ Hybrid Multi-Factor Job Matching Engine.
 Calculates compatibility using Skill Overlap, TF-IDF Cosine Similarity, and Experience Alignment.
 """
 
-import joblib
+import skops.io as sio
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Any, Optional
@@ -34,7 +34,7 @@ class JobMatcher:
             pass
 
         try:
-            self.tfidf_artifact = joblib.load(self.tfidf_path)
+            self.tfidf_artifact = sio.load(self.tfidf_path, trusted=["scipy.sparse._csr.csr_matrix"])
         except Exception:
             pass
 
