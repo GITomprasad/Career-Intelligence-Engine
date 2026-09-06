@@ -4,12 +4,15 @@ Predicts market compensation ranges in LPA (Lakhs Per Annum) based on multi-fact
 """
 
 import json
+import logging
 import joblib
 import numpy as np
 import pandas as pd
 from typing import Dict, Any, Optional
 from src.config import SALARY_REGRESSOR_PATH, ONTOLOGY_PATH
 
+
+logger = logging.getLogger(__name__)
 
 class SalaryPredictor:
     def __init__(self, model_path: str = None, ontology_path: str = None):
@@ -32,8 +35,8 @@ class SalaryPredictor:
             self.model = self.artifact["model"]
             self.ohe = self.artifact["one_hot_encoder"]
             self.scaler = self.artifact["scaler"]
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"Failed to load salary predictor model artifacts: {e}")
 
     def predict_salary(
         self,
@@ -77,8 +80,8 @@ class SalaryPredictor:
                     "formatted_median": f"₹{pred_median}L / yr",
                     "model_used": self.artifact.get("model_name", "Gradient Boosting Regressor")
                 }
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"Error during salary prediction inference, falling back to heuristics: {e}")
 
         # Heuristic fallback if model not loaded
         role_meta = self.roles_metadata.get(role_id, {})
