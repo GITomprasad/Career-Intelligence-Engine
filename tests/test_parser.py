@@ -246,3 +246,8 @@ def test_validate_is_resume_rejects_standalone_invoice(parser):
     assert validation["is_resume"] is False
 
 
+
+def test_try_parse_json_resume_invalid_json(parser):
+    """Ensure malformed JSON gracefully returns None."""
+    result = parser._try_parse_json_resume("{bad json")
+    assert result is None
