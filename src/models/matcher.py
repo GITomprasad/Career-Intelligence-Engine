@@ -4,10 +4,13 @@ Calculates compatibility using Skill Overlap, TF-IDF Cosine Similarity, and Expe
 """
 
 import joblib
+import logging
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Any, Optional
 from sklearn.metrics.pairwise import cosine_similarity
+
+logger = logging.getLogger(__name__)
 
 from src.config import (
     JOBS_DATASET_PATH,
@@ -30,13 +33,13 @@ class JobMatcher:
     def _load(self):
         try:
             self.df_jobs = pd.read_csv(self.jobs_path)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Failed to load jobs data from {self.jobs_path}: {e}")
 
         try:
             self.tfidf_artifact = joblib.load(self.tfidf_path)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Failed to load TF-IDF model from {self.tfidf_path}: {e}")
 
     def match_jobs(
         self,
@@ -82,7 +85,8 @@ class JobMatcher:
                 
                 sims = cosine_similarity(user_vec, jobs_mat)[0]
                 nlp_scores = sims * 100.0
-            except Exception:
+            except Exception as e:
+                logger.error(f"Failed to compute NLP scores: {e}")
                 nlp_scores = np.zeros(len(df_filtered))
 
         matches = []
