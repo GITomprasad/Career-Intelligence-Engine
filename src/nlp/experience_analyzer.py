@@ -47,6 +47,18 @@ class ExperienceAnalyzer:
             "reduced", "increased", "improved", "accelerated", "scaled", "led", "created"
         }
 
+        # Date interval patterns for performance
+        # Date interval patterns
+        self.month_yr_pat = re.compile(
+            r"(\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?|\d{1,2})\s*[/,\s]?\s*((?:19|20)\d{2})\s*(?:-|–|to)\s*(\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?|\d{1,2})?\s*[/,\s]?\s*((?:19|20)\d{2}|present|current|till date|now)",
+            re.IGNORECASE
+        )
+
+        self.year_pat = re.compile(
+            r"(\b(?:19|20)\d{2}\b)\s*(?:-|–|to)\s*(\b(?:19|20)\d{2}\b|present|current|till date|now)",
+            re.IGNORECASE
+        )
+
     def analyze_experience(self, text: str, education_text: str = "", experience_text: str = "") -> Dict[str, Any]:
         """
         Analyzes resume text to estimate total professional experience and seniority level.
@@ -170,12 +182,7 @@ class ExperienceAnalyzer:
         total_months = 0
 
         # Pattern 1: Month Year - Month Year / Present (e.g. 'Jan 2022 - Jun 2024' or '07/2023 - Present')
-        month_yr_pat = re.compile(
-            r"(\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?|\d{1,2})\s*[/,\s]?\s*((?:19|20)\d{2})\s*(?:-|–|to)\s*(\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?|\d{1,2})?\s*[/,\s]?\s*((?:19|20)\d{2}|present|current|till date|now)",
-            re.IGNORECASE
-        )
-
-        for match in month_yr_pat.finditer(text):
+        for match in self.month_yr_pat.finditer(text):
             start_m_str, start_yr_str, end_m_str, end_yr_str = match.groups()
             try:
                 start_yr = int(start_yr_str)
@@ -201,8 +208,7 @@ class ExperienceAnalyzer:
             return round(total_months / 12.0, 1)
 
         # Pattern 2: Year - Year / Present (e.g. '2022 - Present' or '2021 - 2023')
-        year_pat = re.compile(r"(\b(?:19|20)\d{2}\b)\s*(?:-|–|to)\s*(\b(?:19|20)\d{2}\b|present|current|till date|now)", re.IGNORECASE)
-        for match in year_pat.finditer(text):
+        for match in self.year_pat.finditer(text):
             start_yr_str, end_yr_str = match.groups()
             try:
                 start_yr = int(start_yr_str)

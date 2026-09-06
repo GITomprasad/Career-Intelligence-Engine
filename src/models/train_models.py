@@ -5,7 +5,7 @@ Trains role classification, salary regression, and TF-IDF semantic matching arti
 
 import json
 import os
-import joblib
+import skops.io as sio
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, RandomForestRegressor, GradientBoostingRegressor
@@ -91,7 +91,7 @@ def train_role_classifier():
         "classes": list(best_model.classes_),
         "benchmark_metrics": results
     }
-    joblib.dump(artifact, ROLE_CLASSIFIER_PATH)
+    sio.dump(artifact, ROLE_CLASSIFIER_PATH)
     print(f"Saved Role Classifier to {ROLE_CLASSIFIER_PATH}")
     return results
 
@@ -157,7 +157,7 @@ def train_salary_regressor():
         "num_cols": num_cols,
         "benchmark_metrics": results
     }
-    joblib.dump(artifact, SALARY_REGRESSOR_PATH)
+    sio.dump(artifact, SALARY_REGRESSOR_PATH)
     print(f"Saved Salary Regressor to {SALARY_REGRESSOR_PATH}")
     return results
 
@@ -193,7 +193,7 @@ def train_tfidf_matcher():
         "role_ids": df_jobs["role_id"].tolist()
     }
     
-    joblib.dump(artifact, TFIDF_MATCHER_PATH)
+    sio.dump(artifact, TFIDF_MATCHER_PATH)
     print(f"Fitted TF-IDF vocabulary on {len(corpus)} jobs (Matrix shape: {tfidf_matrix.shape}).")
     print(f"Saved TF-IDF Matcher to {TFIDF_MATCHER_PATH}")
 
