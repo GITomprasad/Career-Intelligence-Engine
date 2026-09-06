@@ -5,6 +5,7 @@ Predicts market compensation ranges in LPA (Lakhs Per Annum) based on multi-fact
 
 import json
 import joblib
+import pickle
 import numpy as np
 import pandas as pd
 from typing import Dict, Any, Optional
@@ -32,7 +33,7 @@ class SalaryPredictor:
             self.model = self.artifact["model"]
             self.ohe = self.artifact["one_hot_encoder"]
             self.scaler = self.artifact["scaler"]
-        except Exception:
+        except (FileNotFoundError, OSError, KeyError, pickle.UnpicklingError, EOFError):
             pass
 
     def predict_salary(
@@ -77,7 +78,7 @@ class SalaryPredictor:
                     "formatted_median": f"₹{pred_median}L / yr",
                     "model_used": self.artifact.get("model_name", "Gradient Boosting Regressor")
                 }
-            except Exception:
+            except (ValueError, TypeError, KeyError, IndexError, AttributeError):
                 pass
 
         # Heuristic fallback if model not loaded
