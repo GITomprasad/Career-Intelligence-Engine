@@ -87,6 +87,8 @@ class SkillExtractor:
         for pattern, s_id in self.regex_patterns:
             if pattern.search(clean_text):
                 found_ids.add(s_id)
+                # mask the matched skill to avoid substring matches
+                clean_text = pattern.sub(" ", clean_text)
                 
         # Group by category
         by_cat: Dict[str, List[str]] = {}
