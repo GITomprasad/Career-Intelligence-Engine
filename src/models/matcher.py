@@ -4,10 +4,13 @@ Calculates compatibility using Skill Overlap, TF-IDF Cosine Similarity, and Expe
 """
 
 import joblib
+import logging
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Any, Optional
 from sklearn.metrics.pairwise import cosine_similarity
+
+logger = logging.getLogger(__name__)
 
 from src.config import (
     JOBS_DATASET_PATH,
@@ -30,13 +33,13 @@ class JobMatcher:
     def _load(self):
         try:
             self.df_jobs = pd.read_csv(self.jobs_path)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Failed to load jobs data from {self.jobs_path}: {e}")
 
         try:
             self.tfidf_artifact = joblib.load(self.tfidf_path)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Failed to load TF-IDF model from {self.tfidf_path}: {e}")
 
     def match_jobs(
         self,
@@ -82,85 +85,119 @@ class JobMatcher:
                 
                 sims = cosine_similarity(user_vec, jobs_mat)[0]
                 nlp_scores = sims * 100.0
-            except Exception:
+            except Exception as e:
+                logger.error(f"Failed to compute NLP scores: {e}")
                 nlp_scores = np.zeros(len(df_filtered))
 
         matches = []
-        indices = list(range(len(df_filtered)))
+        n_rows = len(df_filtered)
+        if n_rows == 0:
+            return []
 
-        for idx, (_, row) in enumerate(df_filtered.iterrows()):
-            req_skills = set(str(row["required_skills"]).split(",")) if pd.notna(row["required_skills"]) else set()
-            pref_skills = set(str(row["preferred_skills"]).split(",")) if pd.notna(row["preferred_skills"]) else set()
+        # 4. Education & Certification Score (10%) (Constant for user)
+        edu_score = 80.0
+        if "Master" in user_edu or "Ph.D" in user_edu:
+            edu_score = 100.0
+        elif "Bachelor" in user_edu:
+            edu_score = 90.0
+
+        # 3. Experience Alignment Score (15%)
+        min_exp_arr = df_filtered["min_experience_years"].to_numpy().astype(float)
+        max_exp_arr = df_filtered["max_experience_years"].to_numpy().astype(float)
+
+        deficit = min_exp_arr - user_exp
+        exp_score_arr = np.full(n_rows, 100.0)
+
+        mask_under = user_exp < min_exp_arr
+        mask_over = user_exp > (max_exp_arr + 2)
+
+        exp_score_arr[mask_under] = np.maximum(20.0, 100.0 - (deficit[mask_under] * 30.0))
+        exp_score_arr[mask_over] = 85.0
+
+        # 1. Skill Match Score (50%)
+        req_skills_series = df_filtered["required_skills"].to_numpy()
+        pref_skills_series = df_filtered["preferred_skills"].to_numpy()
+
+        def process_skills(req_val, pref_val):
+            req_set = set(str(req_val).split(",")) if pd.notna(req_val) else set()
+            pref_set = set(str(pref_val).split(",")) if pd.notna(pref_val) else set()
             
-            # 1. Skill Match Score (50%)
-            matched_req = user_skills.intersection(req_skills)
-            matched_pref = user_skills.intersection(pref_skills)
-            missing_req = req_skills - user_skills
+            matched_req = user_skills.intersection(req_set)
+            matched_pref = user_skills.intersection(pref_set)
+            missing_req = req_set - user_skills
             
-            req_ratio = len(matched_req) / max(1, len(req_skills))
-            pref_ratio = len(matched_pref) / max(1, len(pref_skills)) if pref_skills else 1.0
+            req_ratio = len(matched_req) / max(1, len(req_set))
+            pref_ratio = len(matched_pref) / max(1, len(pref_set)) if pref_set else 1.0
+            
             skill_score = (req_ratio * 0.85 + pref_ratio * 0.15) * 100.0
+            return skill_score, matched_req, matched_pref, missing_req
             
-            # 2. NLP Semantic Score (25%)
-            nlp_score = float(nlp_scores[idx]) if idx < len(nlp_scores) else 50.0
-            
-            # 3. Experience Alignment Score (15%)
-            min_exp = float(row["min_experience_years"])
-            max_exp = float(row["max_experience_years"])
-            if min_exp <= user_exp <= max_exp + 2:
-                exp_score = 100.0
-            elif user_exp < min_exp:
-                deficit = min_exp - user_exp
-                exp_score = max(20.0, 100.0 - (deficit * 30.0))
-            else:
-                # Overqualified
-                exp_score = 85.0
-                
-            # 4. Education & Certification Score (10%)
-            edu_score = 80.0
-            if "Master" in user_edu or "Ph.D" in user_edu:
-                edu_score = 100.0
-            elif "Bachelor" in user_edu:
-                edu_score = 90.0
+        skill_results = [process_skills(req, pref) for req, pref in zip(req_skills_series, pref_skills_series)]
+        skill_score_arr = np.array([r[0] for r in skill_results])
 
-            # Composite weighted match
-            total_score = (
-                (skill_score * WEIGHT_SKILLS) +
-                (nlp_score * WEIGHT_NLP_SIMILARITY) +
-                (exp_score * WEIGHT_EXPERIENCE) +
-                (edu_score * WEIGHT_EDUCATION)
-            )
+        # 2. NLP Semantic Score (25%) is already in nlp_scores
+        # Make sure nlp_scores length matches
+        if len(nlp_scores) < n_rows:
+            padded_nlp = np.full(n_rows, 50.0)
+            padded_nlp[:len(nlp_scores)] = nlp_scores
+            nlp_scores = padded_nlp
+        elif len(nlp_scores) > n_rows:
+            nlp_scores = nlp_scores[:n_rows]
             
-            total_score = min(98.5, max(15.0, round(total_score, 1)))
+        # Composite weighted match
+        total_scores = (
+            (skill_score_arr * WEIGHT_SKILLS) +
+            (nlp_scores * WEIGHT_NLP_SIMILARITY) +
+            (exp_score_arr * WEIGHT_EXPERIENCE) +
+            (edu_score * WEIGHT_EDUCATION)
+        )
+        total_scores = np.clip(np.round(total_scores, 1), 15.0, 98.5)
 
-            if total_score >= min_score:
+        valid_indices = np.where(total_scores >= min_score)[0]
+
+        if len(valid_indices) > 0:
+            valid_scores = total_scores[valid_indices]
+            # Sort indices by score descending, take top_n
+            sort_order = np.argsort(-valid_scores)[:top_n]
+            top_indices = valid_indices[sort_order]
+
+            df_top = df_filtered.iloc[top_indices]
+            top_total_scores = total_scores[top_indices]
+            top_skill_scores = skill_score_arr[top_indices]
+            top_nlp_scores = nlp_scores[top_indices]
+            top_exp_scores = exp_score_arr[top_indices]
+
+            for i, row in enumerate(df_top.itertuples()):
+                orig_idx = top_indices[i]
+                matched_req = skill_results[orig_idx][1]
+                matched_pref = skill_results[orig_idx][2]
+                missing_req = skill_results[orig_idx][3]
+
                 matches.append({
-                    "job_id": row["job_id"],
-                    "title": row["title"],
-                    "role_id": row["role_id"],
-                    "role_title": row["role_title"],
-                    "category": row["category"],
-                    "company": row["company"],
-                    "company_type": row["company_type"],
-                    "company_tier": row["company_tier"],
-                    "location": row["location"],
-                    "salary_min_lpa": row["salary_min_lpa"],
-                    "salary_max_lpa": row["salary_max_lpa"],
-                    "salary_formatted": f"₹{row['salary_min_lpa']}L - ₹{row['salary_max_lpa']}L / yr",
-                    "min_experience_years": row["min_experience_years"],
-                    "match_score": total_score,
+                    "job_id": row.job_id,
+                    "title": row.title,
+                    "role_id": row.role_id,
+                    "role_title": row.role_title,
+                    "category": row.category,
+                    "company": row.company,
+                    "company_type": row.company_type,
+                    "company_tier": row.company_tier,
+                    "location": row.location,
+                    "salary_min_lpa": row.salary_min_lpa,
+                    "salary_max_lpa": row.salary_max_lpa,
+                    "salary_formatted": f"₹{row.salary_min_lpa}L - ₹{row.salary_max_lpa}L / yr",
+                    "min_experience_years": row.min_experience_years,
+                    "match_score": float(top_total_scores[i]),
                     "score_breakdown": {
-                        "skill_score": round(skill_score, 1),
-                        "nlp_score": round(nlp_score, 1),
-                        "exp_score": round(exp_score, 1),
+                        "skill_score": round(float(top_skill_scores[i]), 1),
+                        "nlp_score": round(float(top_nlp_scores[i]), 1),
+                        "exp_score": round(float(top_exp_scores[i]), 1),
                         "edu_score": round(edu_score, 1)
                     },
                     "matched_skills": [s.replace("_", " ").title() for s in sorted(list(matched_req))],
                     "missing_skills": [s.replace("_", " ").title() for s in sorted(list(missing_req))],
                     "preferred_matched": [s.replace("_", " ").title() for s in sorted(list(matched_pref))],
-                    "description": row["description"]
+                    "description": row.description
                 })
 
-        # Sort matches by match_score descending
-        matches.sort(key=lambda x: x["match_score"], reverse=True)
-        return matches[:top_n]
+        return matches
