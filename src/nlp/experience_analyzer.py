@@ -47,11 +47,13 @@ class ExperienceAnalyzer:
             "reduced", "increased", "improved", "accelerated", "scaled", "led", "created"
         }
 
+        # Date interval patterns for performance
         # Date interval patterns
         self.month_yr_pat = re.compile(
             r"(\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?|\d{1,2})\s*[/,\s]?\s*((?:19|20)\d{2})\s*(?:-|–|to)\s*(\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?|\d{1,2})?\s*[/,\s]?\s*((?:19|20)\d{2}|present|current|till date|now)",
             re.IGNORECASE
         )
+
         self.year_pat = re.compile(
             r"(\b(?:19|20)\d{2}\b)\s*(?:-|–|to)\s*(\b(?:19|20)\d{2}\b|present|current|till date|now)",
             re.IGNORECASE
@@ -179,6 +181,7 @@ class ExperienceAnalyzer:
         """Calculates total duration in years from job date ranges like 'Jan 2023 - Present'."""
         total_months = 0
 
+        # Pattern 1: Month Year - Month Year / Present (e.g. 'Jan 2022 - Jun 2024' or '07/2023 - Present')
         for match in self.month_yr_pat.finditer(text):
             start_m_str, start_yr_str, end_m_str, end_yr_str = match.groups()
             try:
