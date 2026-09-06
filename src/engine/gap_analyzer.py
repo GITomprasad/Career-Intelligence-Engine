@@ -4,7 +4,7 @@ Performs granular skill gap analysis, calculates role readiness, and assigns mar
 """
 
 import json
-from typing import Dict, List, Set, Any, Optional
+from typing import Dict, List, Any
 from src.config import ONTOLOGY_PATH
 from src.nlp.skill_extractor import SkillExtractor
 
