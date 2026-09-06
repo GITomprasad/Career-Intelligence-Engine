@@ -16,9 +16,9 @@ ONTOLOGY_PATH = DATA_DIR / "skills_ontology.json"
 JOBS_DATASET_PATH = PROCESSED_DATA_DIR / "jobs_dataset.csv"
 SALARY_DATASET_PATH = PROCESSED_DATA_DIR / "salary_benchmarks.csv"
 
-ROLE_CLASSIFIER_PATH = MODELS_DIR / "role_classifier.pkl"
-SALARY_REGRESSOR_PATH = MODELS_DIR / "salary_regressor.pkl"
-TFIDF_MATCHER_PATH = MODELS_DIR / "tfidf_matcher.pkl"
+ROLE_CLASSIFIER_PATH = MODELS_DIR / "role_classifier.skops"
+SALARY_REGRESSOR_PATH = MODELS_DIR / "salary_regressor.skops"
+TFIDF_MATCHER_PATH = MODELS_DIR / "tfidf_matcher.skops"
 
 # Ensure directories exist
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
