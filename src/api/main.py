@@ -3,6 +3,7 @@ FastAPI REST Application for Career Intelligence Engine.
 Provides HTTP API endpoints for resume parsing, job matching, gap analysis, salary prediction, and career simulation.
 """
 
+import os
 from typing import Dict, Any, List, Optional
 from fastapi import FastAPI, File, UploadFile, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -41,9 +42,11 @@ app = FastAPI(
 )
 
 # Enable CORS for frontend integrations
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:8000,http://localhost:8501").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
