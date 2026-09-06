@@ -11,7 +11,7 @@ import logging
 import os
 import re
 import zipfile
-import defusedxml.ElementTree as ET
+import xml.etree.ElementTree as ET
 from typing import Dict, Any, List, Optional, Union
 import numpy as np
 from PIL import Image

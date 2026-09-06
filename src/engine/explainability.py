@@ -3,7 +3,8 @@ Explainable AI (XAI) Engine.
 Provides human-interpretable factor breakdowns and feature attribution for career match scores.
 """
 
-from typing import Dict, Any
+from typing import Dict, List, Any
+from src.config import WEIGHT_SKILLS, WEIGHT_NLP_SIMILARITY, WEIGHT_EXPERIENCE, WEIGHT_EDUCATION
 
 
 class ExplainabilityEngine:

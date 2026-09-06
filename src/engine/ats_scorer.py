@@ -133,6 +133,7 @@ class ATSScorer:
         issues = []
         wins = []
 
+        # Generate actionable keyword fixes matching plan examples
         for s_id in missing_core[:3]:
             s_name = self.extractor.get_skill_name(s_id)
             issues.append(f"Add '{s_name}' to your skills section — appears in 80%+ of {role_title} postings")

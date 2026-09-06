@@ -4,7 +4,7 @@ Predicts suitable career roles and probability distributions based on candidate 
 """
 
 import json
-import skops.io as sio
+import joblib
 import numpy as np
 from typing import List, Dict, Any, Optional
 from src.config import ROLE_CLASSIFIER_PATH, ONTOLOGY_PATH
@@ -26,7 +26,7 @@ class RoleClassifier:
             self.roles_metadata = data.get("roles", {})
             
         try:
-            self.artifact = sio.load(self.model_path)
+            self.artifact = joblib.load(self.model_path)
             self.model = self.artifact["model"]
             self.skill_feature_names = self.artifact["skill_feature_names"]
         except Exception:

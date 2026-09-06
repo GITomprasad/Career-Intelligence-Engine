@@ -3,7 +3,6 @@ FastAPI REST Application for Career Intelligence Engine.
 Provides HTTP API endpoints for resume parsing, job matching, gap analysis, salary prediction, and career simulation.
 """
 
-import os
 from typing import Dict, Any, List, Optional
 from fastapi import FastAPI, File, UploadFile, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -42,11 +41,9 @@ app = FastAPI(
 )
 
 # Enable CORS for frontend integrations
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:8000,http://localhost:8501").split(",")
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -78,11 +75,11 @@ def health_check():
 
 
 @app.post("/api/resume/parse-file", tags=["Resume NLP"])
-def parse_resume_file(file: UploadFile = File(...)):
+async def parse_resume_file(file: UploadFile = File(...)):
     """
     Upload and parse a single PDF, Word DOCX, Image, or TXT resume file (Max 10MB).
     """
-    contents = file.file.read()
+    contents = await file.read()
     if not contents:
         raise HTTPException(status_code=400, detail="Uploaded file is empty.")
     if len(contents) > MAX_FILE_SIZE_BYTES:

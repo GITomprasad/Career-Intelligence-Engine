@@ -40,12 +40,12 @@ class MarketAnalyzer:
         if df_target.empty:
             df_target = self.df_jobs
 
-        all_skills = [
-            clean
-            for skills_str in df_target["all_skills"].dropna()
-            for s in str(skills_str).split(",")
-            if (clean := s.strip())
-        ]
+        all_skills = []
+        for skills_str in df_target["all_skills"].dropna():
+            for s in str(skills_str).split(","):
+                clean = s.strip()
+                if clean:
+                    all_skills.append(clean)
 
         total_postings = len(df_target)
         counter = Counter(all_skills)
