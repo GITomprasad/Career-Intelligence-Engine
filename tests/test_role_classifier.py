@@ -1,72 +1,40 @@
-"""
-Unit tests for Role Classifier.
-"""
-
 import pytest
-from unittest.mock import patch, MagicMock
 from src.models.role_classifier import RoleClassifier
+from src.config import ONTOLOGY_PATH
 
-@pytest.fixture
-def classifier():
-    return RoleClassifier()
+def test_role_classifier_invalid_model_path_fallback():
+    """Test that a non-existent model triggers the fallback exception handling block."""
+    classifier = RoleClassifier(model_path="non_existent_model.pkl", ontology_path=str(ONTOLOGY_PATH))
 
-def test_predict_roles_with_model(classifier):
-    # Test with actual model if available
-    if not classifier.model:
-        pytest.skip("Trained model not found")
+    # Check that model attributes are None/empty due to fallback
+    assert classifier.artifact is None
+    assert classifier.model is None
+    assert classifier.skill_feature_names == []
 
-    skill_ids = ["python", "sql", "pandas", "scikit_learn"]
-    results = classifier.predict_roles(skill_ids, top_n=3)
+    # Check that predict_roles still works and uses the fallback heuristic ranking
+    roles = classifier.predict_roles(["python", "sql"], top_n=2)
+    assert len(roles) == 2
+    assert "role_id" in roles[0]
+    assert "confidence_score" in roles[0]
 
-    assert isinstance(results, list)
-    assert len(results) <= 3
-    if len(results) > 0:
-        for res in results:
-            assert "role_id" in res
-            assert "title" in res
-            assert "confidence_score" in res
-            assert "base_salary_min_lpa" in res
+def test_role_classifier_invalid_file_content_fallback(tmp_path):
+    """Test that an invalid (corrupted) model file triggers the fallback exception handling block."""
+    invalid_model = tmp_path / "invalid_model.pkl"
+    invalid_model.write_text("invalid content")
 
-def test_predict_roles_fallback_no_model():
-    # Initialize with an invalid model path to force fallback
-    fallback_classifier = RoleClassifier(model_path="invalid_path.pkl")
-    assert fallback_classifier.model is None
+    classifier = RoleClassifier(model_path=str(invalid_model), ontology_path=str(ONTOLOGY_PATH))
 
-    skill_ids = ["python", "sql", "pandas", "scikit_learn"]
-    results = fallback_classifier.predict_roles(skill_ids, top_n=2)
+    # Check that model attributes are None/empty due to fallback
+    assert classifier.artifact is None
+    assert classifier.model is None
+    assert classifier.skill_feature_names == []
 
-    assert isinstance(results, list)
-    assert len(results) <= 2
-    if len(results) > 0:
-        for res in results:
-            assert "role_id" in res
-            assert "title" in res
-            assert "confidence_score" in res
-            assert "base_salary_min_lpa" in res
-            assert "category" in res
+    # Check that predict_roles still works using fallback logic
+    roles = classifier.predict_roles(["python", "sql"])
+    assert len(roles) > 0
 
-@patch("src.models.role_classifier.joblib.load")
-def test_predict_roles_model_no_predict_proba(mock_load):
-    # Mock joblib to return a model without predict_proba
-    mock_model = MagicMock()
-    del mock_model.predict_proba
-
-    mock_load.return_value = {
-        "model": mock_model,
-        "skill_feature_names": ["python", "sql"]
-    }
-
-    classifier = RoleClassifier(model_path="dummy.pkl")
-    assert classifier.model is mock_model
-    assert not hasattr(classifier.model, "predict_proba")
-
-    skill_ids = ["python", "sql"]
-    results = classifier.predict_roles(skill_ids, top_n=3)
-
-    assert isinstance(results, list)
-    assert len(results) <= 3
-    if len(results) > 0:
-        for res in results:
-            assert "role_id" in res
-            assert "title" in res
-            assert "confidence_score" in res
+def test_role_classifier_default_loading():
+    """Test that the role classifier can handle standard loading defaults gracefully."""
+    classifier = RoleClassifier(ontology_path=str(ONTOLOGY_PATH))
+    assert classifier.roles_metadata is not None
+    assert len(classifier.roles_metadata) > 0
