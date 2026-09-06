@@ -48,6 +48,7 @@ class ExperienceAnalyzer:
         }
 
         # Date interval patterns for performance
+        # Date interval patterns
         self.month_yr_pat = re.compile(
             r"(\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?|\d{1,2})\s*[/,\s]?\s*((?:19|20)\d{2})\s*(?:-|–|to)\s*(\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?|\d{1,2})?\s*[/,\s]?\s*((?:19|20)\d{2}|present|current|till date|now)",
             re.IGNORECASE

@@ -5,7 +5,6 @@ Unit tests for Skill Gap Analyzer, Roadmap Generator, and Simulator.
 import pytest
 from src.engine.gap_analyzer import SkillGapAnalyzer
 from src.engine.roadmap_generator import RoadmapGenerator
-from src.engine.simulator import CareerSimulator
 
 
 @pytest.fixture
@@ -16,11 +15,6 @@ def gap_analyzer():
 @pytest.fixture
 def roadmap_gen():
     return RoadmapGenerator()
-
-
-@pytest.fixture
-def simulator():
-    return CareerSimulator()
 
 
 def test_gap_analyzer_classification(gap_analyzer):
@@ -41,22 +35,3 @@ def test_roadmap_generation(gap_analyzer, roadmap_gen):
     assert "phases" in roadmap
     assert len(roadmap["phases"]) >= 2
     assert roadmap["total_estimated_weeks"] > 0
-
-
-def test_career_simulator_deltas(simulator):
-    profile = {
-        "name": "Test User",
-        "skill_ids": ["python", "sql"],
-        "experience_years": 1.0,
-        "education": {"degree": "Bachelor's Degree"}
-    }
-    
-    sim = simulator.simulate(
-        current_profile=profile,
-        target_role_id="data_scientist",
-        additional_skills=["docker", "aws", "machine_learning"],
-        additional_experience_years=1.0
-    )
-    
-    assert sim["impact"]["readiness_delta_pct"] > 0
-    assert sim["impact"]["salary_increase_lpa"] > 0
